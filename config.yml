@@ -1,0 +1,24 @@
+Database:
+  Enabled: true
+  Database_Name: iris_swift
+  Journal_Mode: WAL
+  Max_Idle_Connections: 2
+  Max_Open_Connections: 5
+
+
+SMTP:
+  Enabled: true
+  Max_Retries: 3
+  Use_TLS: true
+  Base_Sender_Name: "Iris Swift"
+  Base_Sender_Email: "no-reply@verypro.wtf"
+
+
+Logging:
+  Enabled: true
+  Log_File_Path: "./logs/latest.log"
+  Log_Level: INFO
+  Compress_Logs: true
+  Max_Backups: 10
+  Max_Size: 50
+  Max_Age: 30
