@@ -1,4 +1,6 @@
 ./secrets/*
 *.env
 ./tmp/*
-
+*.db
+./views/node_modules
+./tmp
