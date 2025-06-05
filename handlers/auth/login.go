@@ -7,7 +7,6 @@ import (
 	"github.com/Maxxxxxx-x/iris-swift/db/sql/sqlc"
 	"github.com/Maxxxxxx-x/iris-swift/handlers"
 	"github.com/Maxxxxxx-x/iris-swift/services/auth"
-	"github.com/Maxxxxxx-x/iris-swift/services/session"
 	"github.com/Maxxxxxx-x/iris-swift/views/pages"
 	"github.com/labstack/echo/v4"
 )
@@ -56,9 +55,6 @@ func (handler *AuthHandler) HandleLogin(ctx echo.Context) error {
 		handler.logger.Warn().Msgf("invalid password for account %s", user.ID)
 	}
 
-	// logged in! create cookie
-	cookie, err := session.CreateCookie(ctx, COOKIE_NAME, map[string][string]{
-	}, 86400)
 
 	return nil
 }
