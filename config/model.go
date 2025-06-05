@@ -28,8 +28,9 @@ type DatabaseConfig struct {
 
 type SMTPConfig struct {
 	Enabled           bool `yaml:"Enabled"`
-	SMTP_Host         string
-	SMTP_Port         string
+	Host         string
+	Port         string
+	Password	  string
 	Max_Retries       int    `yaml:"Max_Retries"`
 	Use_TLS           bool   `yaml:"Use_TLS"`
 	Base_Sender_Name  string `yaml:"Base_Sender_Name"`

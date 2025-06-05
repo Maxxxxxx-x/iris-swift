@@ -41,6 +41,29 @@ func getAppConfig() (AppConfig, error) {
 	}, nil
 }
 
+func getSMTPConfig() (SMTPConfig, error) {
+	host, err := getFromEnv("SMTP_HOST")
+	if err != nil {
+		return SMTPConfig{}, err
+	}
+
+	port, err := getFromEnv("SMTP_PORT")
+	if err != nil {
+		return SMTPConfig{}, err
+	}
+
+	password, err := getFromEnv("SMTP_PASSWORD")
+	if err != nil {
+		return SMTPConfig{}, err
+	}
+
+	return SMTPConfig{
+		Host: host,
+		Port: port,
+		Password: password,
+	}, nil
+}
+
 func readYamlFile(filePath string) ([]byte, error) {
 	if err := utils.EnsureFileExists(filePath); err != nil {
 		return []byte{}, err
@@ -117,6 +140,12 @@ func GetConfig(filePath string) (Config, error) {
 		return config, err
 	}
 	config.App = appConfig
+
+	smtpConfig, err := getSMTPConfig()
+	if err != nil {
+		return config, err
+	}
+	config.SMTP = smtpConfig
 
 	configBytes, err := readYamlFile(filePath)
 	if err != nil {
