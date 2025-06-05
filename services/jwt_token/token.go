@@ -21,8 +21,8 @@ func New(config config.JWTConfig) (ITokenManager, error) {
 	}
 
 	return &TokenManager{
-		config: config,
-		accessTokenSigner: accessTokenSigner,
+		config:             config,
+		accessTokenSigner:  accessTokenSigner,
 		refreshTokenSigner: refreshTokenSigner,
 	}, nil
 }

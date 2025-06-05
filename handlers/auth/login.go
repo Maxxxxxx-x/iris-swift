@@ -55,6 +55,5 @@ func (handler *AuthHandler) HandleLogin(ctx echo.Context) error {
 		handler.logger.Warn().Msgf("invalid password for account %s", user.ID)
 	}
 
-
 	return nil
 }

@@ -12,5 +12,3 @@ func GenerateULID() (ulid.ULID, error) {
 	ms := ulid.Timestamp(time.Now())
 	return ulid.New(ms, entropy)
 }
-
-

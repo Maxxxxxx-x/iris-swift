@@ -1447,3 +1447,20 @@
 {"level":"info","service":"auth","time":"2025-06-05T19:17:41+08:00","message":"Registered Login API routes"}
 {"level":"info","time":"2025-06-05T19:17:41+08:00","message":"All routes registered!"}
 {"level":"info","host":"localhost:8080","protocol":"HTTP/1.1","request_id":"","request_ip":"::1","referer":"","path":"/","method":"GET","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0","status":200,"latency":"101.715µs","time":"2025-06-05T19:17:41+08:00"}
+{"level":"info","time":"2025-06-05T22:38:59+08:00","message":"Registering Root rotues"}
+{"level":"info","service":"auth","time":"2025-06-05T22:38:59+08:00","message":"Registering UI routes"}
+{"level":"info","service":"auth","time":"2025-06-05T22:38:59+08:00","message":"Registered Login UI routes"}
+{"level":"info","service":"auth","time":"2025-06-05T22:38:59+08:00","message":"Registering API routes"}
+{"level":"info","service":"auth","time":"2025-06-05T22:38:59+08:00","message":"Registered Login API routes"}
+{"level":"info","time":"2025-06-05T22:38:59+08:00","message":"All routes registered!"}
+{"level":"info","host":"localhost:8080","protocol":"HTTP/1.1","request_id":"","request_ip":"::1","referer":"","path":"/","method":"GET","user_agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Safari/605.1.15","status":200,"latency":"1.570417ms","time":"2025-06-05T22:39:00+08:00"}
+{"level":"info","host":"localhost:8080","protocol":"HTTP/1.1","request_id":"","request_ip":"::1","referer":"http://localhost:8080/","path":"/static/styles.css","method":"GET","user_agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Safari/605.1.15","status":200,"latency":"2.045125ms","time":"2025-06-05T22:39:00+08:00"}
+{"level":"info","time":"2025-06-05T22:39:24+08:00","message":"Registering Root rotues"}
+{"level":"info","service":"auth","time":"2025-06-05T22:39:24+08:00","message":"Registering UI routes"}
+{"level":"info","service":"auth","time":"2025-06-05T22:39:24+08:00","message":"Registered Login UI routes"}
+{"level":"info","service":"auth","time":"2025-06-05T22:39:24+08:00","message":"Registering API routes"}
+{"level":"info","service":"auth","time":"2025-06-05T22:39:24+08:00","message":"Registered Login API routes"}
+{"level":"info","time":"2025-06-05T22:39:24+08:00","message":"All routes registered!"}
+{"level":"info","host":"localhost:8080","protocol":"HTTP/1.1","request_id":"","request_ip":"::1","referer":"","path":"/","method":"GET","user_agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Safari/605.1.15","status":200,"latency":"742.167µs","time":"2025-06-05T22:39:26+08:00"}
+{"level":"info","host":"localhost:8080","protocol":"HTTP/1.1","request_id":"","request_ip":"::1","referer":"http://localhost:8080/","path":"/static/styles.css","method":"GET","user_agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Safari/605.1.15","status":304,"latency":"197.5µs","time":"2025-06-05T22:39:26+08:00"}
+{"level":"fatal","error":"http: Server closed","time":"2025-06-05T22:41:02+08:00","message":"An error occured starting the server`"}

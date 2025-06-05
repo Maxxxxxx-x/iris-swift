@@ -6,11 +6,10 @@ import (
 )
 
 type ITokenManager interface {
-
 }
 
 type TokenManager struct {
-	config config.JWTConfig
-	accessTokenSigner jwt.Signer
+	config             config.JWTConfig
+	accessTokenSigner  jwt.Signer
 	refreshTokenSigner jwt.Signer
 }

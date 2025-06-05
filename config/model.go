@@ -1,6 +1,8 @@
 package config
 
-import "time"
+import (
+	"time"
+)
 
 type EnvConfig struct {
 	App_Env   string
@@ -41,10 +43,22 @@ type LoggerConfig struct {
 	Max_Backups   int    `yaml:"Max_Backup"`
 }
 
+type BigCache struct {
+	Enabled            bool   `yaml:"Enabled"`
+	Shards             int    `yaml:"Shards"`
+	LifeWindow         string `yaml:"LifeWindow"`
+	CleanWindow        string `yaml:"CleanWindow"`
+	MaxEntriesInWindow int    `yaml:"MaxEntriesInWindow"`
+	MaxEntrySize       int    `yaml:"MaxEntrySize"`
+	Verbose            bool   `yaml:"Verbose"`
+	HardMaxCacheSize   int    `yaml:"HardMaxCacheSize"`
+}
+
 type Config struct {
 	Env       EnvConfig
 	Database  DatabaseConfig `yaml:"Database"`
 	SMTP      SMTPConfig     `yaml:"SMTP"`
 	JwtConfig JWTConfig
 	Logger    LoggerConfig `yaml:"Logging"`
+	BigCache  BigCache     `yaml:"BigCache"`
 }

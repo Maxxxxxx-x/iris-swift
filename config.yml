@@ -20,3 +20,14 @@ Logging:
   Max_Backups: 10
   Max_Size: 50
   Max_Age: 30
+
+
+BigCache:
+  Enabled: true
+  Shards: 1024 # Number of shards must be a power of 2
+  LifeWindow: 10m
+  CleanWindow: 1m
+  MaxEntriesInWindow: 600000
+  MaxEntrySize: 500
+  Verbose: false
+  HardMaxCacheSize: 8192 #MB
