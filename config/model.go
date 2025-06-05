@@ -2,19 +2,21 @@ package config
 
 import "time"
 
-type EnvConfig struct {
-	App_Env   string
-	App_Host  string
-	App_Port  string
-	SMTP_Host string
-	SMTP_Port string
+type AppConfig struct {
+	Host string
+	Port string
+}
+
+type JWTTokenConfig struct {
+	Secret string
+	TTL    time.Duration
 }
 
 type JWTConfig struct {
-	AccessTokenSecret  string
-	RefreshTokenSecret string
-	AccessTokenTTL     time.Duration
-	RefreshTokenTTL    time.Duration
+	AccessToken        JWTTokenConfig
+	RefreshToken       JWTTokenConfig
+	VerifyEmailToken   JWTTokenConfig
+	ResetPasswordToken JWTTokenConfig
 }
 
 type DatabaseConfig struct {
@@ -25,7 +27,9 @@ type DatabaseConfig struct {
 }
 
 type SMTPConfig struct {
-	Enabled           bool   `yaml:"Enabled"`
+	Enabled           bool `yaml:"Enabled"`
+	SMTP_Host         string
+	SMTP_Port         string
 	Max_Retries       int    `yaml:"Max_Retries"`
 	Use_TLS           bool   `yaml:"Use_TLS"`
 	Base_Sender_Name  string `yaml:"Base_Sender_Name"`
@@ -42,7 +46,8 @@ type LoggerConfig struct {
 }
 
 type Config struct {
-	Env       EnvConfig
+	Env       string
+	App       AppConfig
 	Database  DatabaseConfig `yaml:"Database"`
 	SMTP      SMTPConfig     `yaml:"SMTP"`
 	JwtConfig JWTConfig
