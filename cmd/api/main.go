@@ -14,19 +14,28 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func main() {
-	appEnv := config.GetAppEnv()
+func loadDotEnv() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatalf("Failed to load environment: %v\n", err)
 		os.Exit(1)
 	}
+}
+
+func main() {
+	appEnv := config.GetAppEnv()
+
+	if appEnv == "dev" {
+		loadDotEnv()
+	}
+
 	config, err := config.GetConfig("./config.yml")
+	config.Env = appEnv
 	if err != nil {
 		log.Fatalf("Failed to load config: %v\n", err)
 		os.Exit(1)
 	}
 
-	logger.Init(config.Logger, config.Env.App_Env)
+	logger.Init(config.Logger, config.Env)
 
 	var conn *sql.DB
 
@@ -39,7 +48,7 @@ func main() {
 
 	server := server.New(querier, appEnv)
 	go func() {
-		if err := server.Start(config.Env.App_Host, config.Env.App_Port); err != nil {
+		if err := server.Start(config.App.Host, config.App.Port); err != nil {
 			logger.Fatal().Err(err).Msg("An error occured starting the server`")
 		}
 	}()
