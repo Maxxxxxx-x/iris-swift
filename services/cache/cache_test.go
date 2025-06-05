@@ -16,7 +16,7 @@ func TestCache(t *testing.T) {
 		Verbose:            true,
 		HardMaxCacheSize:   8192,
 	}
-	cache, err := NewCache(cfg)
+	cache, err := New(cfg)
 	if err != nil {
 		t.Errorf("NewCache err: %v", err)
 		return
