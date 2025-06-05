@@ -1,6 +1,6 @@
-./secrets/*
+/secrets/*
 *.env
-./tmp/*
+/tmp/*
 *.db
-./views/node_modules
-./tmp
+/views/node_modules
+/tmp
