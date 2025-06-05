@@ -2,6 +2,7 @@ package config
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"time"
 
@@ -10,38 +11,34 @@ import (
 )
 
 var (
-	ErrMissingAppEnv                = errors.New("Missing APP_ENV from Environment")
-	ErrMissingAppHost               = errors.New("Missing APP_HOST from Environment")
-	ErrMissingAppPort               = errors.New("Missing APP_PORT from Environment")
-	ErrMissingSMTPHost              = errors.New("Missing SMTP_HOST from Environment")
-	ErrMissingSMTPPort              = errors.New("Missing SMTP_PORT from Environment")
-	ErrMissingJWTAccessTokenSecret  = errors.New("Missing JWT_ACCESS_TOKEN_SECRET from Environment")
-	ErrMissingJWTRefreshTokenSecret = errors.New("Missing JWT_REFRESH_TOKEN_SECRET from Environment")
-	ErrMissingJWTAccessTokenTTL     = errors.New("Missing JWT_ACCESS_TOKEN_TTL from Environment")
-	ErrMissingJWTRefreshTokenTTL    = errors.New("Missing JWT_REFRESH_TOKEN_TTL from Environment")
+	ErrMissingEnvVar = func(name string) error {
+		return errors.New(fmt.Sprintf("Missing %s from Environment", name))
+	}
 )
 
-func getConfigFromEnv() (EnvConfig, error) {
-	var config EnvConfig
-	var ok bool
-
-	if config.App_Env, ok = os.LookupEnv("APP_ENV"); !ok {
-		return config, ErrMissingAppEnv
+func getFromEnv(name string) (string, error) {
+	config, ok := os.LookupEnv(name)
+	if !ok {
+		return "", ErrMissingEnvVar(name)
 	}
-	if config.App_Host, ok = os.LookupEnv("APP_HOST"); !ok {
-		return config, ErrMissingAppHost
-	}
-	if config.App_Port, ok = os.LookupEnv("APP_PORT"); !ok {
-		return config, ErrMissingAppPort
-	}
-	if config.SMTP_Host, ok = os.LookupEnv("SMTP_HOST"); !ok {
-		return config, ErrMissingSMTPHost
-	}
-	if config.SMTP_Port, ok = os.LookupEnv("SMTP_PORT"); !ok {
-		return config, ErrMissingSMTPPort
-	}
-
 	return config, nil
+}
+
+func getAppConfig() (AppConfig, error) {
+	host, err := getFromEnv("APP_HOST")
+	if err != nil {
+		return AppConfig{}, err
+	}
+
+	port, err := getFromEnv("APP_PORT")
+	if err != nil {
+		return AppConfig{}, err
+	}
+
+	return AppConfig{
+		Host: host,
+		Port: port,
+	}, nil
 }
 
 func readYamlFile(filePath string) ([]byte, error) {
@@ -59,46 +56,64 @@ func GetAppEnv() string {
 	return env
 }
 
-func getJwtConfig() (JWTConfig, error) {
-	var config JWTConfig
-	var ok bool
-
-	if config.AccessTokenSecret, ok = os.LookupEnv("JWT_ACCESS_TOKEN_SECRET"); !ok {
-		return config, ErrMissingJWTAccessTokenSecret
-	}
-
-	if config.RefreshTokenSecret, ok = os.LookupEnv("JWT_REFRESH_TOKEN_SECRET"); !ok {
-		return config, ErrMissingJWTRefreshTokenSecret
-	}
-
-	accessTokenTtlStr, ok := os.LookupEnv("JWT_ACCESS_TOKEN_TTL")
+func getTokenConfig(secretEnv, ttlEnv string) (JWTTokenConfig, error) {
+	var config JWTTokenConfig
+	secret, ok := os.LookupEnv(secretEnv)
 	if !ok {
-		return config, ErrMissingJWTAccessTokenTTL
+		return config, ErrMissingEnvVar(secretEnv)
 	}
-	accessTokenTtl, err := time.ParseDuration(accessTokenTtlStr)
+
+	rawTTL, ok := os.LookupEnv(ttlEnv)
+	if !ok {
+		return config, ErrMissingEnvVar(ttlEnv)
+	}
+
+	ttl, err := time.ParseDuration(rawTTL)
 	if err != nil {
 		return config, err
 	}
-	config.AccessTokenTTL = accessTokenTtl
 
-	refreshTokenTtlStr, ok := os.LookupEnv("JWT_REFRESH_TOKEN_TTL")
-	if !ok {
-		return config, ErrMissingJWTRefreshTokenTTL
-	}
-	refreshTokenTtl, err := time.ParseDuration(refreshTokenTtlStr)
-	if err != nil {
-		return config, err
-	}
-	config.RefreshTokenTTL = refreshTokenTtl
-
+	config.Secret = secret
+	config.TTL = ttl
 	return config, nil
+}
+
+func getJwtConfig() (JWTConfig, error) {
+
+	accessToken, err := getTokenConfig("JWT_ACCESS_TOKEN_SECRET", "JWT_ACCESS_TOKEN_TTL")
+	if err != nil {
+		return JWTConfig{}, err
+	}
+
+	refreshToken, err := getTokenConfig("JWT_REFRESH_TOKEN_SECRET", "JWT_REFRESH_TOKEN_TTL")
+	if err != nil {
+		return JWTConfig{}, err
+	}
+
+	verifyEmailToken, err := getTokenConfig("JWT_VERIFY_EMAIL_TOKEN_SECRET", "JWT_VERIFY_EMAIL_TOKEN_TTL")
+	if err != nil {
+		return JWTConfig{}, err
+	}
+
+	resetPasswordToken, err := getTokenConfig("JWT_RESET_PASSWORD_TOKEN_SECRET", "JWT_RESET_PASSWORD_TTL")
+	if err != nil {
+		return JWTConfig{}, err
+	}
+
+	return JWTConfig{
+		AccessToken:        accessToken,
+		RefreshToken:       refreshToken,
+		VerifyEmailToken:   verifyEmailToken,
+		ResetPasswordToken: resetPasswordToken,
+	}, nil
 }
 
 func GetConfig(filePath string) (Config, error) {
 	var config Config
 	var err error
 
-	if config.Env, err = getConfigFromEnv(); err != nil {
+	appConfig, err := getAppConfig()
+	if err != nil {
 		return config, err
 	}
 
