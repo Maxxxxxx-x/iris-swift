@@ -16,7 +16,7 @@ type bigCache struct {
 	cache *bigcache.BigCache
 }
 
-func NewCache(config config.BigCache) (Cache, error) {
+func New(config config.BigCache) (Cache, error) {
 	lifeWindow, err := time.ParseDuration(config.LifeWindow)
 	if err != nil {
 		panic("Invalid LifeWindow duration format: " + err.Error())
