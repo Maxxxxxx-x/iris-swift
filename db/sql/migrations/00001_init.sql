@@ -1,6 +1,8 @@
 -- +goose Up
 -- +goose StatementBegin
 
+PRAGMA journal_mode=WAL;
+
 CREATE TABLE IF NOT EXISTS users (
     id                  TEXT PRIMARY KEY,
     username            TEXT UNIQUE NOT NULL,

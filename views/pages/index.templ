@@ -1,0 +1,32 @@
+package pages
+
+import "github.com/Maxxxxxx-x/iris-swift/views/components"
+
+templ Header() {
+	<header class="w-screen">
+		<nav class="navbar justify-between mx-auto">
+			<div class="navbar-start flex flex-row px-5 gap-20">
+				<h1 class="text-2xl">Iris Swift</h1>
+				<div class="flex flex-row gap-3">
+					@components.LinkButton("/docs", "Docs", false)
+					@components.LinkButton("#features", "Features", false)
+					@components.LinkButton("#use-case", "Use Casse", false)
+				</div>
+			</div>
+			<div px-5>
+				<a class="btn btn-primary text-white" href="/login">Login</a>
+			</div>
+		</nav>
+	</header>
+}
+
+templ IndexPage() {
+	@components.Layout() {
+		@Header()
+		<main class="flex-col flex h-scren items-center justify-center gap-y-5">
+			<h1 class="text-4xl">Iris Swift</h1>
+			<h3 class="text-2xl">An email sending API for all your projects.</h3>
+			<a class="btn btn-neutral rounded hover:btn-accent " href="/login">Get Started</a>
+		</main>
+	}
+}

@@ -1,0 +1,15 @@
+services:
+  iris-swift:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - APP_ENV="DEV"
+      - APP_HOST="0.0.0.0"
+      - APP_PORT="8080"
+      - SMTP_HOST="0.0.0.0"
+      - SMTP_PORT="5050"
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    restart: unless-stopped
+

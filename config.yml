@@ -1,7 +1,6 @@
 Database:
   Enabled: true
   Database_Name: iris_swift
-  Journal_Mode: WAL
   Max_Idle_Connections: 2
   Max_Open_Connections: 5
 
@@ -15,7 +14,6 @@ SMTP:
 
 
 Logging:
-  Enabled: true
   Log_File_Path: "./logs/latest.log"
   Log_Level: INFO
   Compress_Logs: true

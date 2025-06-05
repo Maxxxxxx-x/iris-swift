@@ -1,0 +1,19 @@
+package components
+
+templ Layout() {
+	<!DOCTYPE html>
+	<html lang="en-US" data-theme="dim">
+		<head>
+			<title>iris-swift</title>
+			<meta name="description" content="Iris-Swift, an API for you to send emails with ease"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1"/>
+			<link href="/static/styles.css" rel="stylesheet"/>
+			<script src="https://unpkg.com/htmx.org@2.0.4"></script>
+            <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
+			<meta charset="UTF-8"/>
+		</head>
+		<body id="main-body" class="flex-col w-full h-screeen flex justify-center items-center">
+			{ children... }
+		</body>
+	</html>
+}

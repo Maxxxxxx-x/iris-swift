@@ -1,54 +1,25 @@
-#!make
+#!makefile
 
-APP_EXECUTABLE=iris-swift
-APP_PATH=./cmd/api
-
-all: build test
+APP_NAME="iris-swift"
+CMD_PATH="./cmd/${APP_NAME}"
 
 tidy:
 	@go mod tidy
-	@go vet ./...
 	@go fmt ./...
+	@echo "Done!"
 
-clean:
-	@echo "Cleaning..."
-	@go clean
-	@rm -rf ./tmp
-	@rm -f coverage*.out
-
-
-test:
-	@echo "Starting test..."
-	@go test ./... -v
+generate:
+	@echo "Generateing Templ Code"
+	templ generate ./views/
+	@echo "Generating SQLC code"
+	sqlc generate -f ./sqlc.yml
+	@echo "Generating Tailwind CSS code"
+	tailwindcss -i ./views/static/custom.css -o ./views/static/styles.css --minify
 
 
-coverage: test
-	@go tool cover -html=coverage.out
-
-
-build:
-	@echo "Building application..."
-	@GOARCH=amd64 GOOS=linux go build -o ./tmp/${APP_EXECUTABLE} ${APP_PATH}
-	@echo "Build passed"
-
-
-run: build
-	@chmod u+x ./tmp/${APP_EXECUTABLE}
-	./tmp/${APP_EXECUTABLE}
+run: generate
+	go run ./cmd/api/main.go
 
 
 watch:
-	@if command -v air > /dev/null; then \
-		air; \
-		echo "Starting air..."; \
-	else \
-		read -p "Air is not insalled. Install? [Y/n]" choice; \
-		if [ "$$choice" != "n" ] && [ "$$choice" != "N" ]; then \
-			go install github.com/air-verse/air@latest; \
-			air; \
-			echo "Starting air..."; \
-		else \
-			echo "Air not installed. Exiting..."; \
-			exit 1; \
-		fi; \
-	fi; \
+	air

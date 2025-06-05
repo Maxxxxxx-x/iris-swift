@@ -1,0 +1,8 @@
+package components
+
+templ Button(text string, disabled bool) {
+}
+
+templ LinkButton(link, text string, disabled bool) {
+	<a class="btn hover:btn-neutral disabled:cursor-not-allowed" disabled?={ disabled } href={ templ.URL(link) }>{ text }</a>
+}
