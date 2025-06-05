@@ -95,7 +95,7 @@ func getJwtConfig() (JWTConfig, error) {
 		return JWTConfig{}, err
 	}
 
-	resetPasswordToken, err := getTokenConfig("JWT_RESET_PASSWORD_TOKEN_SECRET", "JWT_RESET_PASSWORD_TTL")
+	resetPasswordToken, err := getTokenConfig("JWT_RESET_PASSWORD_TOKEN_SECRET", "JWT_RESET_PASSWORD_TOKEN_TTL")
 	if err != nil {
 		return JWTConfig{}, err
 	}
