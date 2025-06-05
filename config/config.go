@@ -116,6 +116,7 @@ func GetConfig(filePath string) (Config, error) {
 	if err != nil {
 		return config, err
 	}
+	config.App = appConfig
 
 	configBytes, err := readYamlFile(filePath)
 	if err != nil {
