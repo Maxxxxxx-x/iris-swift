@@ -10,6 +10,7 @@ import (
 	"github.com/Maxxxxxx-x/iris-swift/db/sql/sqlc"
 	"github.com/Maxxxxxx-x/iris-swift/logger"
 	"github.com/Maxxxxxx-x/iris-swift/server"
+	token "github.com/Maxxxxxx-x/iris-swift/services/jwt_token"
 
 	"github.com/joho/godotenv"
 )
@@ -45,6 +46,8 @@ func main() {
 
 	db.TestConnection(conn)
 	querier := sqlc.New(conn)
+
+	token.Init(config.JwtConfig)
 
 	server := server.New(querier, appEnv)
 	go func() {
