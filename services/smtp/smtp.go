@@ -1,6 +1,7 @@
 package smtp
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/Maxxxxxx-x/iris-swift/config"
 	"github.com/emersion/go-sasl"
@@ -8,7 +9,7 @@ import (
 )
 
 type SmtpClient interface {
-	Send(to string, body string) error
+	Send(to string, subject string, body string) error
 	Close() error
 }
 
@@ -35,7 +36,7 @@ func NewClient(cfg config.SMTPConfig) (SmtpClient, error) {
 	return smtpclient, nil
 }
 
-func (s *smtpClient) Send(to string, body string) error {
+func (s *smtpClient) Send(to string, subject string, body string) error {
 	if err := s.client.Mail(s.config.Base_Sender_Email, nil); err != nil {
 		return err
 	}
@@ -48,7 +49,14 @@ func (s *smtpClient) Send(to string, body string) error {
 	}
 	defer w.Close()
 
-	if _, err := w.Write([]byte(body)); err != nil {
+	var msg bytes.Buffer
+	msg.WriteString(fmt.Sprintf("From: %s\r\n", s.config.Base_Sender_Email))
+	msg.WriteString(fmt.Sprintf("To: %s\r\n", to))
+	msg.WriteString(fmt.Sprintf("Subject: %s\r\n", subject))
+	msg.WriteString(fmt.Sprintf("Content-Type: text/html; charset=\"UTF-8\"\r\n"))
+	msg.WriteString("\r\n")
+	msg.WriteString(body)
+	if _, err := msg.WriteTo(w); err != nil {
 		return err
 	}
 
