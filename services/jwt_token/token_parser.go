@@ -14,7 +14,7 @@ func (manager *TokenManager) ParseAndVerify(rawToken string, verifier jwt.Verifi
 	return jwt.Parse([]byte(rawToken), verifier)
 }
 
-func VerifyToken(verifier jwt.Verifier, rawToken string) error {
+func (manager *TokenManager) VerifyToken(verifier jwt.Verifier, rawToken string) error {
 	token, err := manager.ParseNoVerify(rawToken)
 	if err != nil {
 		manager.logger.Error().Err(err).Msg("Failed to parse token")
