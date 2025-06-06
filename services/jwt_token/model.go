@@ -39,7 +39,6 @@ type AccessTokenClaims struct {
 }
 
 type RefreshTokenClaims struct {
-	AccessTokenId string `json:"ati"`
 	UserId        string `json:"user_id"`
 	jwt.RegisteredClaims
 }
