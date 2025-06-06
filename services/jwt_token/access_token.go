@@ -7,11 +7,11 @@ import (
 	"github.com/cristalhq/jwt/v5"
 )
 
-func GenerateAccessToken(userId, role string) (*jwt.Token, string, error) {
+func GenerateAccessToken(userId, role string) (*jwt.Token, error) {
 	tokenId, err := utils.GenerateULID()
 	if err != nil {
 		manager.logger.Error().Err(err).Msg("Failed to create TokenId while generating access token")
-		return nil, "", err
+		return nil, err
 	}
 
 	currentTimestamp := time.Now()
@@ -29,7 +29,7 @@ func GenerateAccessToken(userId, role string) (*jwt.Token, string, error) {
 	}
 
 	token, err := jwt.NewBuilder(manager.access.Signer).Build(claims)
-	return token, tokenId.String(), err
+	return token, err
 }
 
 func VerifyAndParseAccessToken(rawToken string) (*jwt.Token, error) {
