@@ -1,0 +1,72 @@
+[
+ {
+  "method": "GET",
+  "path": "/api/v1/:id/usage",
+  "name": "github.com/Maxxxxxx-x/iris-swift/handlers/keys.(*KeysHandler).GetKeyUsageById-fm"
+ },
+ {
+  "method": "DELETE",
+  "path": "/api/v1/:id",
+  "name": "github.com/Maxxxxxx-x/iris-swift/handlers/keys.(*KeysHandler).RevokeKeyWithId-fm"
+ },
+ {
+  "method": "echo_route_not_found",
+  "path": "/static",
+  "name": "github.com/labstack/echo/v4.init.func1"
+ },
+ {
+  "method": "echo_route_not_found",
+  "path": "/static/*",
+  "name": "github.com/labstack/echo/v4.init.func1"
+ },
+ {
+  "method": "POST",
+  "path": "/api/v1/auth/login",
+  "name": "github.com/Maxxxxxx-x/iris-swift/handlers/auth.(*AuthHandler).HandleLogin-fm"
+ },
+ {
+  "method": "GET",
+  "path": "/api/v1/auth/test",
+  "name": "github.com/Maxxxxxx-x/iris-swift/handlers/auth.(*AuthHandler).CreateDummyAccount-fm"
+ },
+ {
+  "method": "GET",
+  "path": "/api/v1/",
+  "name": "github.com/Maxxxxxx-x/iris-swift/handlers/keys.(*KeysHandler).GetKeysFromUser-fm"
+ },
+ {
+  "method": "POST",
+  "path": "/api/v1/:id/refresh",
+  "name": "github.com/Maxxxxxx-x/iris-swift/handlers/keys.(*KeysHandler).RefreshKeyWithId-fm"
+ },
+ {
+  "method": "GET",
+  "path": "/",
+  "name": "github.com/Maxxxxxx-x/iris-swift/handlers/root.(*RootHandler).ShowIndexPage-fm"
+ },
+ {
+  "method": "GET",
+  "path": "/login",
+  "name": "github.com/Maxxxxxx-x/iris-swift/handlers/auth.(*AuthHandler).ShowLoginPage-fm"
+ },
+ {
+  "method": "echo_route_not_found",
+  "path": "/api/v1/keys",
+  "name": "github.com/labstack/echo/v4.init.func1"
+ },
+ {
+  "method": "echo_route_not_found",
+  "path": "/api/v1/keys/*",
+  "name": "github.com/labstack/echo/v4.init.func1"
+ },
+ {
+  "method": "GET",
+  "path": "/api/v1/:id",
+  "name": "github.com/Maxxxxxx-x/iris-swift/handlers/keys.(*KeysHandler).GetKeyById-fm"
+ },
+ {
+  "method": "POST",
+  "path": "/api/v1/",
+  "name": "github.com/Maxxxxxx-x/iris-swift/handlers/keys.(*KeysHandler).CreateKey-fm"
+ }
+]
