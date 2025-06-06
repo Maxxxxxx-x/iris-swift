@@ -30,7 +30,7 @@ func (handler *AuthHandler) CreateDummyAccount(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate user id")
 	}
 
-	_, err = handler.querier.CreateUserRecord(ctx.Request().Context(), sqlc.CreateUserRecordParams{
+	err = handler.querier.CreateUser(ctx.Request().Context(), sqlc.CreateUserParams{
 		ID:       userId.String(),
 		Email:    email,
 		Password: hash,
