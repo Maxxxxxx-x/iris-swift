@@ -3,7 +3,7 @@ package pages
 import "github.com/Maxxxxxx-x/iris-swift/views/components"
 
 type LoginParams struct {
-	email     string `json:"email" validate:"required"`
+	Email     string `json:"email" validate:"required"`
 	Password  string `json:"password" validate:"required"`
 	Failed    bool
 	CanSubmit bool
@@ -16,7 +16,7 @@ templ LoginForm(params LoginParams) {
 			name="email"
 			placeholder="Email"
 			class="border p-2 rounded bg-base-200"
-			value={ params.email }
+			value={ params.Email }
 			required
 		/>
 		<input
