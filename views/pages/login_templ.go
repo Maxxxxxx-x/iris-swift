@@ -11,10 +11,10 @@ import templruntime "github.com/a-h/templ/runtime"
 import "github.com/Maxxxxxx-x/iris-swift/views/components"
 
 type LoginParams struct {
-	Identifier string `json:"identifier" validate:"required"`
-	Password   string `json:"password" validate:"required"`
-	Failed     bool
-	CanSubmit  bool
+	email     string `json:"email" validate:"required"`
+	Password  string `json:"password" validate:"required"`
+	Failed    bool
+	CanSubmit bool
 }
 
 func LoginForm(params LoginParams) templ.Component {
@@ -38,14 +38,14 @@ func LoginForm(params LoginParams) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form class=\"flex flex-col gap-y-4\"><input type=\"text\" name=\"identifier\" placeholder=\"Email or Username\" class=\"border p-2 rounded bg-base-200\" value=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form class=\"flex flex-col gap-y-4\"><input type=\"email\" name=\"email\" placeholder=\"Email\" class=\"border p-2 rounded bg-base-200\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
-		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(params.Identifier)
+		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(params.email)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/login.templ`, Line: 19, Col: 37}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/login.templ`, Line: 19, Col: 23}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -58,7 +58,7 @@ func LoginForm(params LoginParams) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(params.Password)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/login.templ`, Line: 27, Col: 35}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/login.templ`, Line: 27, Col: 26}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {

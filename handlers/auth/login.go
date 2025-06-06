@@ -4,13 +4,11 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
-	"time"
 
 	"github.com/Maxxxxxx-x/iris-swift/handlers"
 	"github.com/Maxxxxxx-x/iris-swift/services/auth"
 	token "github.com/Maxxxxxx-x/iris-swift/services/jwt_token"
 	"github.com/Maxxxxxx-x/iris-swift/views/pages"
-	"github.com/cristalhq/jwt/v5"
 	"github.com/labstack/echo/v4"
 )
 
