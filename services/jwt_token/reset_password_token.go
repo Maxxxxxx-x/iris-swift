@@ -32,8 +32,12 @@ func GenerateResetPasswordToken(email string) (*jwt.Token, error) {
 }
 
 
-func VerifyResetPasswordToken(rawToken string) (*jwt.Token, error) {
+func VerifyAndParseResetPasswordToken(rawToken string) (*jwt.Token, error) {
 	return manager.ParseAndVerify(rawToken, manager.resetPassword.Verifier)
+}
+
+func VerifyResetPasswordToken(rawToken string) error {
+	return manager.VerifyToken(manager.resetPassword.Verifier, rawToken)
 }
 
 func GetResetPasswordTokenTTL() time.Duration {

@@ -32,9 +32,14 @@ func GenerateRefreshToken(userId, accessTokenId string) (*jwt.Token, error) {
 	return token, err
 }
 
-func VerifyRefreshToken(rawToken string) (*jwt.Token, error) {
+func VerifyAndParseRefreshToken(rawToken string) (*jwt.Token, error) {
 	return manager.ParseAndVerify(rawToken, manager.refresh.Verifier)
 }
+
+func VerifyRefreshToken(rawToken string) error {
+	return manager.VerifyToken(manager.refresh.Verifier, rawToken)
+}
+
 
 func GetRefreshTokenTTL() time.Duration {
 	return manager.refresh.TTL

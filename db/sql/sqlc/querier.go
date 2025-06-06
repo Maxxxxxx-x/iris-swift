@@ -16,20 +16,32 @@ type Querier interface {
 	BlacklistUserByEmail(ctx context.Context, arg BlacklistUserByEmailParams) error
 	BlacklistUserById(ctx context.Context, arg BlacklistUserByIdParams) error
 	BlacklistUserByUsername(ctx context.Context, arg BlacklistUserByUsernameParams) error
+	CreateApiKey(ctx context.Context, arg CreateApiKeyParams) (ApiKey, error)
 	CreateUserRecord(ctx context.Context, arg CreateUserRecordParams) (User, error)
+	DeleteApiKeyById(ctx context.Context, id string) error
+	DeleteApiKeysFromuser(ctx context.Context, createdBy string) error
+	DeleteRevokedApiKeys(ctx context.Context) error
 	DeleteUserByEmail(ctx context.Context, email string) error
 	DeleteUserById(ctx context.Context, id string) error
 	DeleteUserByUserName(ctx context.Context, username string) error
 	ForcePasswordChangeByEmail(ctx context.Context, email string) error
 	ForcePasswordChangeById(ctx context.Context, id string) error
 	ForcePasswordChangeByUsername(ctx context.Context, username string) error
+	GetAllApiKeys(ctx context.Context) ([]ApiKey, error)
+	GetAllApiKeysFromUserId(ctx context.Context, createdBy string) ([]ApiKey, error)
 	GetAllUsers(ctx context.Context) ([]User, error)
+	GetApiKeyById(ctx context.Context, id string) (ApiKey, error)
+	GetApiKeysByRevokerId(ctx context.Context, revokedBy sql.NullString) ([]ApiKey, error)
+	GetRevokedApiKeys(ctx context.Context) ([]ApiKey, error)
+	GetRevokedApiKeysFromUser(ctx context.Context, createdBy string) ([]ApiKey, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetUserById(ctx context.Context, id string) (User, error)
 	GetUserByIdentifier(ctx context.Context, arg GetUserByIdentifierParams) (User, error)
 	GetUserByUsername(ctx context.Context, username string) (User, error)
 	GetUsersApprover(ctx context.Context, approvedBy sql.NullString) ([]User, error)
 	GetUsersOfAccountType(ctx context.Context, accountType string) ([]User, error)
+	RevokeApiKeyById(ctx context.Context, arg RevokeApiKeyByIdParams) error
+	RevokeApiKeysFromUser(ctx context.Context, arg RevokeApiKeysFromUserParams) error
 	UpdateAccountTypeByEmail(ctx context.Context, arg UpdateAccountTypeByEmailParams) error
 	UpdateAccountTypeById(ctx context.Context, arg UpdateAccountTypeByIdParams) error
 	UpdateAccountTypeByUsername(ctx context.Context, arg UpdateAccountTypeByUsernameParams) error
