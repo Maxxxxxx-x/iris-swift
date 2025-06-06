@@ -32,8 +32,12 @@ func GenerateAccessToken(userId, role string) (*jwt.Token, string, error) {
 	return token, tokenId.String(), err
 }
 
-func VerifyAccessToken(rawToken string) (*jwt.Token, error) {
+func VerifyAndParseAccessToken(rawToken string) (*jwt.Token, error) {
 	return manager.ParseAndVerify(rawToken, manager.access.Verifier)
+}
+
+func VerifyAccessToken(rawToken string) error {
+	return manager.VerifyToken(manager.access.Verifier, rawToken)
 }
 
 func GetAccessTokenTTL() time.Duration {
