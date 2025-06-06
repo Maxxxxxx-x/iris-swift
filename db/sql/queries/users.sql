@@ -40,7 +40,7 @@ SET
 WHERE email = ?;
 
 
--- name: CreateUser :one
+-- name: CreateUser :exec
 INSERT INTO users (id, email, password, invited_by )
 VALUES (?, ?, ?, ?);
 
