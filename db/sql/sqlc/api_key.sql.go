@@ -10,50 +10,13 @@ import (
 	"database/sql"
 )
 
-const createApiKey = `-- name: CreateApiKey :one
-INSERT INTO api_key
-(id, api_key_hash, name, desc, created_by, expires_at)
-VALUES
-(?, ?, ?, ?, ?, ?) RETURNING id, api_key_hash, name, "desc", created_by, created_at, expires_at, is_revoked, revoked_at, revoked_by, revoked_reason, usage_count, last_used_at, last_used_ip, last_used_id
+const deleteApiKeyByCreatorId = `-- name: DeleteApiKeyByCreatorId :exec
+DELETE FROM api_key WHERE created_by = ?
 `
 
-type CreateApiKeyParams struct {
-	ID         string         `json:"id"`
-	ApiKeyHash string         `json:"api_key_hash"`
-	Name       string         `json:"name"`
-	Desc       sql.NullString `json:"desc"`
-	CreatedBy  string         `json:"created_by"`
-	ExpiresAt  sql.NullTime   `json:"expires_at"`
-}
-
-func (q *Queries) CreateApiKey(ctx context.Context, arg CreateApiKeyParams) (ApiKey, error) {
-	row := q.queryRow(ctx, q.createApiKeyStmt, createApiKey,
-		arg.ID,
-		arg.ApiKeyHash,
-		arg.Name,
-		arg.Desc,
-		arg.CreatedBy,
-		arg.ExpiresAt,
-	)
-	var i ApiKey
-	err := row.Scan(
-		&i.ID,
-		&i.ApiKeyHash,
-		&i.Name,
-		&i.Desc,
-		&i.CreatedBy,
-		&i.CreatedAt,
-		&i.ExpiresAt,
-		&i.IsRevoked,
-		&i.RevokedAt,
-		&i.RevokedBy,
-		&i.RevokedReason,
-		&i.UsageCount,
-		&i.LastUsedAt,
-		&i.LastUsedIp,
-		&i.LastUsedID,
-	)
-	return i, err
+func (q *Queries) DeleteApiKeyByCreatorId(ctx context.Context, createdBy string) error {
+	_, err := q.exec(ctx, q.deleteApiKeyByCreatorIdStmt, deleteApiKeyByCreatorId, createdBy)
+	return err
 }
 
 const deleteApiKeyById = `-- name: DeleteApiKeyById :exec
@@ -65,30 +28,12 @@ func (q *Queries) DeleteApiKeyById(ctx context.Context, id string) error {
 	return err
 }
 
-const deleteApiKeysFromuser = `-- name: DeleteApiKeysFromuser :exec
-DELETE FROM api_key WHERE created_by = ?
+const getApiKeyByCreatorId = `-- name: GetApiKeyByCreatorId :many
+SELECT id, api_key_hash, name, allowed_domains, created_by, created_at, expires_at, usage_count, last_used_at, last_used_ip, last_used_id FROM api_key WHERE created_by = ? ORDER BY created_at DESC
 `
 
-func (q *Queries) DeleteApiKeysFromuser(ctx context.Context, createdBy string) error {
-	_, err := q.exec(ctx, q.deleteApiKeysFromuserStmt, deleteApiKeysFromuser, createdBy)
-	return err
-}
-
-const deleteRevokedApiKeys = `-- name: DeleteRevokedApiKeys :exec
-DELETE FROM api_key WHERE is_revoked = 1
-`
-
-func (q *Queries) DeleteRevokedApiKeys(ctx context.Context) error {
-	_, err := q.exec(ctx, q.deleteRevokedApiKeysStmt, deleteRevokedApiKeys)
-	return err
-}
-
-const getAllApiKeys = `-- name: GetAllApiKeys :many
-SELECT id, api_key_hash, name, "desc", created_by, created_at, expires_at, is_revoked, revoked_at, revoked_by, revoked_reason, usage_count, last_used_at, last_used_ip, last_used_id FROM api_key ORDER BY created_at DESC
-`
-
-func (q *Queries) GetAllApiKeys(ctx context.Context) ([]ApiKey, error) {
-	rows, err := q.query(ctx, q.getAllApiKeysStmt, getAllApiKeys)
+func (q *Queries) GetApiKeyByCreatorId(ctx context.Context, createdBy string) ([]ApiKey, error) {
+	rows, err := q.query(ctx, q.getApiKeyByCreatorIdStmt, getApiKeyByCreatorId, createdBy)
 	if err != nil {
 		return nil, err
 	}
@@ -100,14 +45,10 @@ func (q *Queries) GetAllApiKeys(ctx context.Context) ([]ApiKey, error) {
 			&i.ID,
 			&i.ApiKeyHash,
 			&i.Name,
-			&i.Desc,
+			&i.AllowedDomains,
 			&i.CreatedBy,
 			&i.CreatedAt,
 			&i.ExpiresAt,
-			&i.IsRevoked,
-			&i.RevokedAt,
-			&i.RevokedBy,
-			&i.RevokedReason,
 			&i.UsageCount,
 			&i.LastUsedAt,
 			&i.LastUsedIp,
@@ -126,69 +67,26 @@ func (q *Queries) GetAllApiKeys(ctx context.Context) ([]ApiKey, error) {
 	return items, nil
 }
 
-const getAllApiKeysFromUserId = `-- name: GetAllApiKeysFromUserId :many
-SELECT id, api_key_hash, name, "desc", created_by, created_at, expires_at, is_revoked, revoked_at, revoked_by, revoked_reason, usage_count, last_used_at, last_used_ip, last_used_id FROM api_key WHERE created_by = ?
-ORDER BY created_at DESC
+const getApiKeyByIdAndCreatorId = `-- name: GetApiKeyByIdAndCreatorId :one
+SELECT id, api_key_hash, name, allowed_domains, created_by, created_at, expires_at, usage_count, last_used_at, last_used_ip, last_used_id FROM api_key WHERE id = ? AND created_by = ? LIMIT 1
 `
 
-func (q *Queries) GetAllApiKeysFromUserId(ctx context.Context, createdBy string) ([]ApiKey, error) {
-	rows, err := q.query(ctx, q.getAllApiKeysFromUserIdStmt, getAllApiKeysFromUserId, createdBy)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []ApiKey{}
-	for rows.Next() {
-		var i ApiKey
-		if err := rows.Scan(
-			&i.ID,
-			&i.ApiKeyHash,
-			&i.Name,
-			&i.Desc,
-			&i.CreatedBy,
-			&i.CreatedAt,
-			&i.ExpiresAt,
-			&i.IsRevoked,
-			&i.RevokedAt,
-			&i.RevokedBy,
-			&i.RevokedReason,
-			&i.UsageCount,
-			&i.LastUsedAt,
-			&i.LastUsedIp,
-			&i.LastUsedID,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+type GetApiKeyByIdAndCreatorIdParams struct {
+	ID        string `json:"id"`
+	CreatedBy string `json:"created_by"`
 }
 
-const getApiKeyById = `-- name: GetApiKeyById :one
-SELECT id, api_key_hash, name, "desc", created_by, created_at, expires_at, is_revoked, revoked_at, revoked_by, revoked_reason, usage_count, last_used_at, last_used_ip, last_used_id FROM api_key WHERE id = ? LIMIT 1
-`
-
-func (q *Queries) GetApiKeyById(ctx context.Context, id string) (ApiKey, error) {
-	row := q.queryRow(ctx, q.getApiKeyByIdStmt, getApiKeyById, id)
+func (q *Queries) GetApiKeyByIdAndCreatorId(ctx context.Context, arg GetApiKeyByIdAndCreatorIdParams) (ApiKey, error) {
+	row := q.queryRow(ctx, q.getApiKeyByIdAndCreatorIdStmt, getApiKeyByIdAndCreatorId, arg.ID, arg.CreatedBy)
 	var i ApiKey
 	err := row.Scan(
 		&i.ID,
 		&i.ApiKeyHash,
 		&i.Name,
-		&i.Desc,
+		&i.AllowedDomains,
 		&i.CreatedBy,
 		&i.CreatedAt,
 		&i.ExpiresAt,
-		&i.IsRevoked,
-		&i.RevokedAt,
-		&i.RevokedBy,
-		&i.RevokedReason,
 		&i.UsageCount,
 		&i.LastUsedAt,
 		&i.LastUsedIp,
@@ -197,13 +95,41 @@ func (q *Queries) GetApiKeyById(ctx context.Context, id string) (ApiKey, error) 
 	return i, err
 }
 
-const getApiKeysByRevokerId = `-- name: GetApiKeysByRevokerId :many
-SELECT id, api_key_hash, name, "desc", created_by, created_at, expires_at, is_revoked, revoked_at, revoked_by, revoked_reason, usage_count, last_used_at, last_used_ip, last_used_id FROM api_key WHERE revoked_by = ?
-ORDER BY revoked_at DESC
+const getApiKeyByKeyHash = `-- name: GetApiKeyByKeyHash :one
+SELECT id, api_key_hash, name, allowed_domains, created_by, created_at, expires_at, usage_count, last_used_at, last_used_ip, last_used_id FROM api_key WHERE api_key_hash = ? LIMIT 1
 `
 
-func (q *Queries) GetApiKeysByRevokerId(ctx context.Context, revokedBy sql.NullString) ([]ApiKey, error) {
-	rows, err := q.query(ctx, q.getApiKeysByRevokerIdStmt, getApiKeysByRevokerId, revokedBy)
+func (q *Queries) GetApiKeyByKeyHash(ctx context.Context, apiKeyHash string) (ApiKey, error) {
+	row := q.queryRow(ctx, q.getApiKeyByKeyHashStmt, getApiKeyByKeyHash, apiKeyHash)
+	var i ApiKey
+	err := row.Scan(
+		&i.ID,
+		&i.ApiKeyHash,
+		&i.Name,
+		&i.AllowedDomains,
+		&i.CreatedBy,
+		&i.CreatedAt,
+		&i.ExpiresAt,
+		&i.UsageCount,
+		&i.LastUsedAt,
+		&i.LastUsedIp,
+		&i.LastUsedID,
+	)
+	return i, err
+}
+
+const getApiKeyByNameAndCreatorId = `-- name: GetApiKeyByNameAndCreatorId :many
+SELECT id, api_key_hash, name, allowed_domains, created_by, created_at, expires_at, usage_count, last_used_at, last_used_ip, last_used_id FROM api_key WHERE name = ? AND created_by = ?
+ORDER BY created_at DESC
+`
+
+type GetApiKeyByNameAndCreatorIdParams struct {
+	Name      string `json:"name"`
+	CreatedBy string `json:"created_by"`
+}
+
+func (q *Queries) GetApiKeyByNameAndCreatorId(ctx context.Context, arg GetApiKeyByNameAndCreatorIdParams) ([]ApiKey, error) {
+	rows, err := q.query(ctx, q.getApiKeyByNameAndCreatorIdStmt, getApiKeyByNameAndCreatorId, arg.Name, arg.CreatedBy)
 	if err != nil {
 		return nil, err
 	}
@@ -215,14 +141,10 @@ func (q *Queries) GetApiKeysByRevokerId(ctx context.Context, revokedBy sql.NullS
 			&i.ID,
 			&i.ApiKeyHash,
 			&i.Name,
-			&i.Desc,
+			&i.AllowedDomains,
 			&i.CreatedBy,
 			&i.CreatedAt,
 			&i.ExpiresAt,
-			&i.IsRevoked,
-			&i.RevokedAt,
-			&i.RevokedBy,
-			&i.RevokedReason,
 			&i.UsageCount,
 			&i.LastUsedAt,
 			&i.LastUsedIp,
@@ -241,13 +163,12 @@ func (q *Queries) GetApiKeysByRevokerId(ctx context.Context, revokedBy sql.NullS
 	return items, nil
 }
 
-const getRevokedApiKeys = `-- name: GetRevokedApiKeys :many
-SELECT id, api_key_hash, name, "desc", created_by, created_at, expires_at, is_revoked, revoked_at, revoked_by, revoked_reason, usage_count, last_used_at, last_used_ip, last_used_id FROM api_key WHERE is_revoked = 1
-ORDER BY revoked_at DESC
+const getApiKeys = `-- name: GetApiKeys :many
+SELECT id, api_key_hash, name, allowed_domains, created_by, created_at, expires_at, usage_count, last_used_at, last_used_ip, last_used_id FROM api_key ORDER BY created_at DESC
 `
 
-func (q *Queries) GetRevokedApiKeys(ctx context.Context) ([]ApiKey, error) {
-	rows, err := q.query(ctx, q.getRevokedApiKeysStmt, getRevokedApiKeys)
+func (q *Queries) GetApiKeys(ctx context.Context) ([]ApiKey, error) {
+	rows, err := q.query(ctx, q.getApiKeysStmt, getApiKeys)
 	if err != nil {
 		return nil, err
 	}
@@ -259,14 +180,10 @@ func (q *Queries) GetRevokedApiKeys(ctx context.Context) ([]ApiKey, error) {
 			&i.ID,
 			&i.ApiKeyHash,
 			&i.Name,
-			&i.Desc,
+			&i.AllowedDomains,
 			&i.CreatedBy,
 			&i.CreatedAt,
 			&i.ExpiresAt,
-			&i.IsRevoked,
-			&i.RevokedAt,
-			&i.RevokedBy,
-			&i.RevokedReason,
 			&i.UsageCount,
 			&i.LastUsedAt,
 			&i.LastUsedIp,
@@ -285,85 +202,58 @@ func (q *Queries) GetRevokedApiKeys(ctx context.Context) ([]ApiKey, error) {
 	return items, nil
 }
 
-const getRevokedApiKeysFromUser = `-- name: GetRevokedApiKeysFromUser :many
-SELECT id, api_key_hash, name, "desc", created_by, created_at, expires_at, is_revoked, revoked_at, revoked_by, revoked_reason, usage_count, last_used_at, last_used_ip, last_used_id FROM api_key WHERE is_revoked = 1 AND created_by = ? ORDER BY revoked_at DESC
-`
-
-func (q *Queries) GetRevokedApiKeysFromUser(ctx context.Context, createdBy string) ([]ApiKey, error) {
-	rows, err := q.query(ctx, q.getRevokedApiKeysFromUserStmt, getRevokedApiKeysFromUser, createdBy)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []ApiKey{}
-	for rows.Next() {
-		var i ApiKey
-		if err := rows.Scan(
-			&i.ID,
-			&i.ApiKeyHash,
-			&i.Name,
-			&i.Desc,
-			&i.CreatedBy,
-			&i.CreatedAt,
-			&i.ExpiresAt,
-			&i.IsRevoked,
-			&i.RevokedAt,
-			&i.RevokedBy,
-			&i.RevokedReason,
-			&i.UsageCount,
-			&i.LastUsedAt,
-			&i.LastUsedIp,
-			&i.LastUsedID,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const revokeApiKeyById = `-- name: RevokeApiKeyById :exec
+const refreshApiKey = `-- name: RefreshApiKey :exec
 UPDATE api_key
-SET
-    is_revoked = 1,
-    revoked_by = ?,
-    revoked_at = ?
-WHERE id = ?
+SET api_key_hash = ? WHERE id = ?
 `
 
-type RevokeApiKeyByIdParams struct {
-	RevokedBy sql.NullString `json:"revoked_by"`
-	RevokedAt sql.NullTime   `json:"revoked_at"`
-	ID        string         `json:"id"`
+type RefreshApiKeyParams struct {
+	ApiKeyHash string `json:"api_key_hash"`
+	ID         string `json:"id"`
 }
 
-func (q *Queries) RevokeApiKeyById(ctx context.Context, arg RevokeApiKeyByIdParams) error {
-	_, err := q.exec(ctx, q.revokeApiKeyByIdStmt, revokeApiKeyById, arg.RevokedBy, arg.RevokedAt, arg.ID)
+func (q *Queries) RefreshApiKey(ctx context.Context, arg RefreshApiKeyParams) error {
+	_, err := q.exec(ctx, q.refreshApiKeyStmt, refreshApiKey, arg.ApiKeyHash, arg.ID)
 	return err
 }
 
-const revokeApiKeysFromUser = `-- name: RevokeApiKeysFromUser :exec
-UPDATE api_key
-SET
-    is_revoked = 1,
-    revoked_by = ?,
-    revoked_at = ?
-WHERE created_by = ?
+const saveApiKey = `-- name: SaveApiKey :one
+INSERT INTO api_key
+(id, api_key_hash, name, allowed_domains, created_by, expires_at)
+VALUES (?, ?, ?, ?, ?, ?) RETURNING id, api_key_hash, name, allowed_domains, created_by, created_at, expires_at, usage_count, last_used_at, last_used_ip, last_used_id
 `
 
-type RevokeApiKeysFromUserParams struct {
-	RevokedBy sql.NullString `json:"revoked_by"`
-	RevokedAt sql.NullTime   `json:"revoked_at"`
-	CreatedBy string         `json:"created_by"`
+type SaveApiKeyParams struct {
+	ID             string       `json:"id"`
+	ApiKeyHash     string       `json:"api_key_hash"`
+	Name           string       `json:"name"`
+	AllowedDomains string       `json:"allowed_domains"`
+	CreatedBy      string       `json:"created_by"`
+	ExpiresAt      sql.NullTime `json:"expires_at"`
 }
 
-func (q *Queries) RevokeApiKeysFromUser(ctx context.Context, arg RevokeApiKeysFromUserParams) error {
-	_, err := q.exec(ctx, q.revokeApiKeysFromUserStmt, revokeApiKeysFromUser, arg.RevokedBy, arg.RevokedAt, arg.CreatedBy)
-	return err
+func (q *Queries) SaveApiKey(ctx context.Context, arg SaveApiKeyParams) (ApiKey, error) {
+	row := q.queryRow(ctx, q.saveApiKeyStmt, saveApiKey,
+		arg.ID,
+		arg.ApiKeyHash,
+		arg.Name,
+		arg.AllowedDomains,
+		arg.CreatedBy,
+		arg.ExpiresAt,
+	)
+	var i ApiKey
+	err := row.Scan(
+		&i.ID,
+		&i.ApiKeyHash,
+		&i.Name,
+		&i.AllowedDomains,
+		&i.CreatedBy,
+		&i.CreatedAt,
+		&i.ExpiresAt,
+		&i.UsageCount,
+		&i.LastUsedAt,
+		&i.LastUsedIp,
+		&i.LastUsedID,
+	)
+	return i, err
 }

@@ -10,130 +10,26 @@ import (
 	"database/sql"
 )
 
-const approveUserByEmail = `-- name: ApproveUserByEmail :exec
-UPDATE users SET approved_by = ?, account_type = 'user' WHERE email = ?
+const createUser = `-- name: CreateUser :exec
+INSERT INTO users (id, email, password, invited_by )
+VALUES (?, ?, ?, ?)
 `
 
-type ApproveUserByEmailParams struct {
-	ApprovedBy sql.NullString `json:"approved_by"`
-	Email      string         `json:"email"`
+type CreateUserParams struct {
+	ID        string         `json:"id"`
+	Email     string         `json:"email"`
+	Password  string         `json:"password"`
+	InvitedBy sql.NullString `json:"invited_by"`
 }
 
-func (q *Queries) ApproveUserByEmail(ctx context.Context, arg ApproveUserByEmailParams) error {
-	_, err := q.exec(ctx, q.approveUserByEmailStmt, approveUserByEmail, arg.ApprovedBy, arg.Email)
-	return err
-}
-
-const approveUserById = `-- name: ApproveUserById :exec
-UPDATE users SET approved_by = ?, account_type = 'user' WHERE id = ?
-`
-
-type ApproveUserByIdParams struct {
-	ApprovedBy sql.NullString `json:"approved_by"`
-	ID         string         `json:"id"`
-}
-
-func (q *Queries) ApproveUserById(ctx context.Context, arg ApproveUserByIdParams) error {
-	_, err := q.exec(ctx, q.approveUserByIdStmt, approveUserById, arg.ApprovedBy, arg.ID)
-	return err
-}
-
-const approveUserByUsername = `-- name: ApproveUserByUsername :exec
-UPDATE users SET approved_by = ?, account_type = 'user' WHERE username = ?
-`
-
-type ApproveUserByUsernameParams struct {
-	ApprovedBy sql.NullString `json:"approved_by"`
-	Username   string         `json:"username"`
-}
-
-func (q *Queries) ApproveUserByUsername(ctx context.Context, arg ApproveUserByUsernameParams) error {
-	_, err := q.exec(ctx, q.approveUserByUsernameStmt, approveUserByUsername, arg.ApprovedBy, arg.Username)
-	return err
-}
-
-const blacklistUserByEmail = `-- name: BlacklistUserByEmail :exec
-UPDATE users SET is_blacklisted = 1, blacklisted_by = ?, blacklist_reason = ?  WHERE email = ?
-`
-
-type BlacklistUserByEmailParams struct {
-	BlacklistedBy   sql.NullString `json:"blacklisted_by"`
-	BlacklistReason sql.NullString `json:"blacklist_reason"`
-	Email           string         `json:"email"`
-}
-
-func (q *Queries) BlacklistUserByEmail(ctx context.Context, arg BlacklistUserByEmailParams) error {
-	_, err := q.exec(ctx, q.blacklistUserByEmailStmt, blacklistUserByEmail, arg.BlacklistedBy, arg.BlacklistReason, arg.Email)
-	return err
-}
-
-const blacklistUserById = `-- name: BlacklistUserById :exec
-UPDATE users SET is_blacklisted = 1, blacklisted_by = ?, blacklist_reason = ?  WHERE id = ?
-`
-
-type BlacklistUserByIdParams struct {
-	BlacklistedBy   sql.NullString `json:"blacklisted_by"`
-	BlacklistReason sql.NullString `json:"blacklist_reason"`
-	ID              string         `json:"id"`
-}
-
-func (q *Queries) BlacklistUserById(ctx context.Context, arg BlacklistUserByIdParams) error {
-	_, err := q.exec(ctx, q.blacklistUserByIdStmt, blacklistUserById, arg.BlacklistedBy, arg.BlacklistReason, arg.ID)
-	return err
-}
-
-const blacklistUserByUsername = `-- name: BlacklistUserByUsername :exec
-UPDATE users SET is_blacklisted = 1, blacklisted_by = ?, blacklist_reason = ?  WHERE username = ?
-`
-
-type BlacklistUserByUsernameParams struct {
-	BlacklistedBy   sql.NullString `json:"blacklisted_by"`
-	BlacklistReason sql.NullString `json:"blacklist_reason"`
-	Username        string         `json:"username"`
-}
-
-func (q *Queries) BlacklistUserByUsername(ctx context.Context, arg BlacklistUserByUsernameParams) error {
-	_, err := q.exec(ctx, q.blacklistUserByUsernameStmt, blacklistUserByUsername, arg.BlacklistedBy, arg.BlacklistReason, arg.Username)
-	return err
-}
-
-const createUserRecord = `-- name: CreateUserRecord :one
-INSERT INTO users (
-    id, username, email, password
-) VALUES (
-    ?, ?, ?, ?
-) RETURNING id, username, email, password, change_password, approved_by, account_type, is_blacklisted, blacklisted_by, blacklist_reason, updated_at
-`
-
-type CreateUserRecordParams struct {
-	ID       string `json:"id"`
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-func (q *Queries) CreateUserRecord(ctx context.Context, arg CreateUserRecordParams) (User, error) {
-	row := q.queryRow(ctx, q.createUserRecordStmt, createUserRecord,
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
+	_, err := q.exec(ctx, q.createUserStmt, createUser,
 		arg.ID,
-		arg.Username,
 		arg.Email,
 		arg.Password,
+		arg.InvitedBy,
 	)
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.Username,
-		&i.Email,
-		&i.Password,
-		&i.ChangePassword,
-		&i.ApprovedBy,
-		&i.AccountType,
-		&i.IsBlacklisted,
-		&i.BlacklistedBy,
-		&i.BlacklistReason,
-		&i.UpdatedAt,
-	)
-	return i, err
+	return err
 }
 
 const deleteUserByEmail = `-- name: DeleteUserByEmail :exec
@@ -154,44 +50,32 @@ func (q *Queries) DeleteUserById(ctx context.Context, id string) error {
 	return err
 }
 
-const deleteUserByUserName = `-- name: DeleteUserByUserName :exec
-DELETE FROM users WHERE username = ?
+const forceUserChangePasswordByEmail = `-- name: ForceUserChangePasswordByEmail :exec
+UPDATE users
+SET
+    require_pw_change = 1
+WHERE email = ?
 `
 
-func (q *Queries) DeleteUserByUserName(ctx context.Context, username string) error {
-	_, err := q.exec(ctx, q.deleteUserByUserNameStmt, deleteUserByUserName, username)
+func (q *Queries) ForceUserChangePasswordByEmail(ctx context.Context, email string) error {
+	_, err := q.exec(ctx, q.forceUserChangePasswordByEmailStmt, forceUserChangePasswordByEmail, email)
 	return err
 }
 
-const forcePasswordChangeByEmail = `-- name: ForcePasswordChangeByEmail :exec
-UPDATE users SET change_password = 1 WHERE email = ?
+const forceUserChangePasswordById = `-- name: ForceUserChangePasswordById :exec
+UPDATE users
+SET
+    require_pw_change = 1
+WHERE id = ?
 `
 
-func (q *Queries) ForcePasswordChangeByEmail(ctx context.Context, email string) error {
-	_, err := q.exec(ctx, q.forcePasswordChangeByEmailStmt, forcePasswordChangeByEmail, email)
-	return err
-}
-
-const forcePasswordChangeById = `-- name: ForcePasswordChangeById :exec
-UPDATE users SET change_password = 1 WHERE id = ?
-`
-
-func (q *Queries) ForcePasswordChangeById(ctx context.Context, id string) error {
-	_, err := q.exec(ctx, q.forcePasswordChangeByIdStmt, forcePasswordChangeById, id)
-	return err
-}
-
-const forcePasswordChangeByUsername = `-- name: ForcePasswordChangeByUsername :exec
-UPDATE users SET change_password = 1 WHERE username = ?
-`
-
-func (q *Queries) ForcePasswordChangeByUsername(ctx context.Context, username string) error {
-	_, err := q.exec(ctx, q.forcePasswordChangeByUsernameStmt, forcePasswordChangeByUsername, username)
+func (q *Queries) ForceUserChangePasswordById(ctx context.Context, id string) error {
+	_, err := q.exec(ctx, q.forceUserChangePasswordByIdStmt, forceUserChangePasswordById, id)
 	return err
 }
 
 const getAllUsers = `-- name: GetAllUsers :many
-SELECT id, username, email, password, change_password, approved_by, account_type, is_blacklisted, blacklisted_by, blacklist_reason, updated_at FROM users
+SELECT id, email, password, last_password, require_pw_change, invited_by, account_type, updated_at FROM users
 `
 
 func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
@@ -205,15 +89,12 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
 		var i User
 		if err := rows.Scan(
 			&i.ID,
-			&i.Username,
 			&i.Email,
 			&i.Password,
-			&i.ChangePassword,
-			&i.ApprovedBy,
+			&i.LastPassword,
+			&i.RequirePwChange,
+			&i.InvitedBy,
 			&i.AccountType,
-			&i.IsBlacklisted,
-			&i.BlacklistedBy,
-			&i.BlacklistReason,
 			&i.UpdatedAt,
 		); err != nil {
 			return nil, err
@@ -230,7 +111,7 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, username, email, password, change_password, approved_by, account_type, is_blacklisted, blacklisted_by, blacklist_reason, updated_at FROM users WHERE email = ? LIMIT 1
+SELECT id, email, password, last_password, require_pw_change, invited_by, account_type, updated_at FROM users WHERE email = ? LIMIT 1
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
@@ -238,22 +119,19 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 	var i User
 	err := row.Scan(
 		&i.ID,
-		&i.Username,
 		&i.Email,
 		&i.Password,
-		&i.ChangePassword,
-		&i.ApprovedBy,
+		&i.LastPassword,
+		&i.RequirePwChange,
+		&i.InvitedBy,
 		&i.AccountType,
-		&i.IsBlacklisted,
-		&i.BlacklistedBy,
-		&i.BlacklistReason,
 		&i.UpdatedAt,
 	)
 	return i, err
 }
 
 const getUserById = `-- name: GetUserById :one
-SELECT id, username, email, password, change_password, approved_by, account_type, is_blacklisted, blacklisted_by, blacklist_reason, updated_at FROM users WHERE id = ? LIMIT 1
+SELECT id, email, password, last_password, require_pw_change, invited_by, account_type, updated_at FROM users WHERE id = ? LIMIT 1
 `
 
 func (q *Queries) GetUserById(ctx context.Context, id string) (User, error) {
@@ -261,229 +139,51 @@ func (q *Queries) GetUserById(ctx context.Context, id string) (User, error) {
 	var i User
 	err := row.Scan(
 		&i.ID,
-		&i.Username,
 		&i.Email,
 		&i.Password,
-		&i.ChangePassword,
-		&i.ApprovedBy,
+		&i.LastPassword,
+		&i.RequirePwChange,
+		&i.InvitedBy,
 		&i.AccountType,
-		&i.IsBlacklisted,
-		&i.BlacklistedBy,
-		&i.BlacklistReason,
 		&i.UpdatedAt,
 	)
 	return i, err
 }
 
-const getUserByIdentifier = `-- name: GetUserByIdentifier :one
-SELECT id, username, email, password, change_password, approved_by, account_type, is_blacklisted, blacklisted_by, blacklist_reason, updated_at FROM users WHERE username = ? OR email = ? LIMIT 1
+const upatePasswordByEmail = `-- name: UpatePasswordByEmail :exec
+UPDATE users
+SET
+    password = ?,
+    last_password = ?
+WHERE email = ?
 `
 
-type GetUserByIdentifierParams struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
+type UpatePasswordByEmailParams struct {
+	Password     string         `json:"password"`
+	LastPassword sql.NullString `json:"last_password"`
+	Email        string         `json:"email"`
 }
 
-func (q *Queries) GetUserByIdentifier(ctx context.Context, arg GetUserByIdentifierParams) (User, error) {
-	row := q.queryRow(ctx, q.getUserByIdentifierStmt, getUserByIdentifier, arg.Username, arg.Email)
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.Username,
-		&i.Email,
-		&i.Password,
-		&i.ChangePassword,
-		&i.ApprovedBy,
-		&i.AccountType,
-		&i.IsBlacklisted,
-		&i.BlacklistedBy,
-		&i.BlacklistReason,
-		&i.UpdatedAt,
-	)
-	return i, err
-}
-
-const getUserByUsername = `-- name: GetUserByUsername :one
-SELECT id, username, email, password, change_password, approved_by, account_type, is_blacklisted, blacklisted_by, blacklist_reason, updated_at FROM users WHERE username = ? LIMIT 1
-`
-
-func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User, error) {
-	row := q.queryRow(ctx, q.getUserByUsernameStmt, getUserByUsername, username)
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.Username,
-		&i.Email,
-		&i.Password,
-		&i.ChangePassword,
-		&i.ApprovedBy,
-		&i.AccountType,
-		&i.IsBlacklisted,
-		&i.BlacklistedBy,
-		&i.BlacklistReason,
-		&i.UpdatedAt,
-	)
-	return i, err
-}
-
-const getUsersApprover = `-- name: GetUsersApprover :many
-SELECT id, username, email, password, change_password, approved_by, account_type, is_blacklisted, blacklisted_by, blacklist_reason, updated_at FROM users WHERE approved_by = ?
-`
-
-func (q *Queries) GetUsersApprover(ctx context.Context, approvedBy sql.NullString) ([]User, error) {
-	rows, err := q.query(ctx, q.getUsersApproverStmt, getUsersApprover, approvedBy)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []User{}
-	for rows.Next() {
-		var i User
-		if err := rows.Scan(
-			&i.ID,
-			&i.Username,
-			&i.Email,
-			&i.Password,
-			&i.ChangePassword,
-			&i.ApprovedBy,
-			&i.AccountType,
-			&i.IsBlacklisted,
-			&i.BlacklistedBy,
-			&i.BlacklistReason,
-			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getUsersOfAccountType = `-- name: GetUsersOfAccountType :many
-SELECT id, username, email, password, change_password, approved_by, account_type, is_blacklisted, blacklisted_by, blacklist_reason, updated_at FROM users WHERE account_type = ?
-`
-
-func (q *Queries) GetUsersOfAccountType(ctx context.Context, accountType string) ([]User, error) {
-	rows, err := q.query(ctx, q.getUsersOfAccountTypeStmt, getUsersOfAccountType, accountType)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []User{}
-	for rows.Next() {
-		var i User
-		if err := rows.Scan(
-			&i.ID,
-			&i.Username,
-			&i.Email,
-			&i.Password,
-			&i.ChangePassword,
-			&i.ApprovedBy,
-			&i.AccountType,
-			&i.IsBlacklisted,
-			&i.BlacklistedBy,
-			&i.BlacklistReason,
-			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const updateAccountTypeByEmail = `-- name: UpdateAccountTypeByEmail :exec
-UPDATE users SET account_type = ? WHERE email = ?
-`
-
-type UpdateAccountTypeByEmailParams struct {
-	AccountType string `json:"account_type"`
-	Email       string `json:"email"`
-}
-
-func (q *Queries) UpdateAccountTypeByEmail(ctx context.Context, arg UpdateAccountTypeByEmailParams) error {
-	_, err := q.exec(ctx, q.updateAccountTypeByEmailStmt, updateAccountTypeByEmail, arg.AccountType, arg.Email)
+func (q *Queries) UpatePasswordByEmail(ctx context.Context, arg UpatePasswordByEmailParams) error {
+	_, err := q.exec(ctx, q.upatePasswordByEmailStmt, upatePasswordByEmail, arg.Password, arg.LastPassword, arg.Email)
 	return err
 }
 
-const updateAccountTypeById = `-- name: UpdateAccountTypeById :exec
-UPDATE users SET account_type = ? WHERE id = ?
+const updatePasswordById = `-- name: UpdatePasswordById :exec
+UPDATE users
+SET
+    password = ?,
+    last_password = ?
+WHERE id = ?
 `
 
-type UpdateAccountTypeByIdParams struct {
-	AccountType string `json:"account_type"`
-	ID          string `json:"id"`
+type UpdatePasswordByIdParams struct {
+	Password     string         `json:"password"`
+	LastPassword sql.NullString `json:"last_password"`
+	ID           string         `json:"id"`
 }
 
-func (q *Queries) UpdateAccountTypeById(ctx context.Context, arg UpdateAccountTypeByIdParams) error {
-	_, err := q.exec(ctx, q.updateAccountTypeByIdStmt, updateAccountTypeById, arg.AccountType, arg.ID)
-	return err
-}
-
-const updateAccountTypeByUsername = `-- name: UpdateAccountTypeByUsername :exec
-UPDATE users SET account_type = ? WHERE username = ?
-`
-
-type UpdateAccountTypeByUsernameParams struct {
-	AccountType string `json:"account_type"`
-	Username    string `json:"username"`
-}
-
-func (q *Queries) UpdateAccountTypeByUsername(ctx context.Context, arg UpdateAccountTypeByUsernameParams) error {
-	_, err := q.exec(ctx, q.updateAccountTypeByUsernameStmt, updateAccountTypeByUsername, arg.AccountType, arg.Username)
-	return err
-}
-
-const updatePasswordByEmail = `-- name: UpdatePasswordByEmail :exec
-UPDATE users SET password = ? WHERE email = ?
-`
-
-type UpdatePasswordByEmailParams struct {
-	Password string `json:"password"`
-	Email    string `json:"email"`
-}
-
-func (q *Queries) UpdatePasswordByEmail(ctx context.Context, arg UpdatePasswordByEmailParams) error {
-	_, err := q.exec(ctx, q.updatePasswordByEmailStmt, updatePasswordByEmail, arg.Password, arg.Email)
-	return err
-}
-
-const updatePasswordByUsername = `-- name: UpdatePasswordByUsername :exec
-UPDATE users SET password = ? WHERE username = ?
-`
-
-type UpdatePasswordByUsernameParams struct {
-	Password string `json:"password"`
-	Username string `json:"username"`
-}
-
-func (q *Queries) UpdatePasswordByUsername(ctx context.Context, arg UpdatePasswordByUsernameParams) error {
-	_, err := q.exec(ctx, q.updatePasswordByUsernameStmt, updatePasswordByUsername, arg.Password, arg.Username)
-	return err
-}
-
-const updatePasswordByid = `-- name: UpdatePasswordByid :exec
-UPDATE users SET password = ? WHERE id = ?
-`
-
-type UpdatePasswordByidParams struct {
-	Password string `json:"password"`
-	ID       string `json:"id"`
-}
-
-func (q *Queries) UpdatePasswordByid(ctx context.Context, arg UpdatePasswordByidParams) error {
-	_, err := q.exec(ctx, q.updatePasswordByidStmt, updatePasswordByid, arg.Password, arg.ID)
+func (q *Queries) UpdatePasswordById(ctx context.Context, arg UpdatePasswordByIdParams) error {
+	_, err := q.exec(ctx, q.updatePasswordByIdStmt, updatePasswordById, arg.Password, arg.LastPassword, arg.ID)
 	return err
 }

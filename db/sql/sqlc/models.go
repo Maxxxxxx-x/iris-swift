@@ -10,72 +10,40 @@ import (
 )
 
 type ApiKey struct {
-	ID            string         `json:"id"`
-	ApiKeyHash    string         `json:"api_key_hash"`
-	Name          string         `json:"name"`
-	Desc          sql.NullString `json:"desc"`
-	CreatedBy     string         `json:"created_by"`
-	CreatedAt     time.Time      `json:"created_at"`
-	ExpiresAt     sql.NullTime   `json:"expires_at"`
-	IsRevoked     bool           `json:"is_revoked"`
-	RevokedAt     sql.NullTime   `json:"revoked_at"`
-	RevokedBy     sql.NullString `json:"revoked_by"`
-	RevokedReason sql.NullString `json:"revoked_reason"`
-	UsageCount    int64          `json:"usage_count"`
-	LastUsedAt    sql.NullTime   `json:"last_used_at"`
-	LastUsedIp    sql.NullString `json:"last_used_ip"`
-	LastUsedID    sql.NullString `json:"last_used_id"`
+	ID             string         `json:"id"`
+	ApiKeyHash     string         `json:"api_key_hash"`
+	Name           string         `json:"name"`
+	AllowedDomains string         `json:"allowed_domains"`
+	CreatedBy      string         `json:"created_by"`
+	CreatedAt      time.Time      `json:"created_at"`
+	ExpiresAt      sql.NullTime   `json:"expires_at"`
+	UsageCount     int64          `json:"usage_count"`
+	LastUsedAt     sql.NullTime   `json:"last_used_at"`
+	LastUsedIp     sql.NullString `json:"last_used_ip"`
+	LastUsedID     sql.NullString `json:"last_used_id"`
 }
 
-type ApiRateLimit struct {
-	ApiKeyID  string    `json:"api_key_id"`
-	StartTime time.Time `json:"start_time"`
-	EndTime   time.Time `json:"end_time"`
-}
-
-type ApiUsageLog struct {
+type ApiUsage struct {
 	ID             string         `json:"id"`
 	ApiKeyID       string         `json:"api_key_id"`
-	UsageID        sql.NullString `json:"usage_id"`
 	Timestamp      time.Time      `json:"timestamp"`
 	StatusCode     string         `json:"status_code"`
 	ResponseTimeMs sql.NullInt64  `json:"response_time_ms"`
 	RequestIp      string         `json:"request_ip"`
-	UserAgent      sql.NullString `json:"user_agent"`
-	Origin         sql.NullString `json:"origin"`
-	Host           sql.NullString `json:"host"`
-	Receiver       sql.NullString `json:"receiver"`
-	Subject        sql.NullString `json:"subject"`
+	FromAddr       string         `json:"from_addr"`
+	ToAddr         string         `json:"to_addr"`
+	Subject        string         `json:"subject"`
 	Status         string         `json:"status"`
 	Webhook        sql.NullString `json:"webhook"`
-	Error          sql.NullString `json:"error"`
-}
-
-type LoginAttempt struct {
-	ID        string         `json:"id"`
-	UserID    string         `json:"user_id"`
-	Timestamp time.Time      `json:"timestamp"`
-	Success   bool           `json:"success"`
-	Ip        sql.NullString `json:"ip"`
-	UserAgent sql.NullString `json:"user_agent"`
 }
 
 type User struct {
 	ID              string         `json:"id"`
-	Username        string         `json:"username"`
 	Email           string         `json:"email"`
 	Password        string         `json:"password"`
-	ChangePassword  bool           `json:"change_password"`
-	ApprovedBy      sql.NullString `json:"approved_by"`
+	LastPassword    sql.NullString `json:"last_password"`
+	RequirePwChange bool           `json:"require_pw_change"`
+	InvitedBy       sql.NullString `json:"invited_by"`
 	AccountType     string         `json:"account_type"`
-	IsBlacklisted   bool           `json:"is_blacklisted"`
-	BlacklistedBy   sql.NullString `json:"blacklisted_by"`
-	BlacklistReason sql.NullString `json:"blacklist_reason"`
 	UpdatedAt       sql.NullTime   `json:"updated_at"`
-}
-
-type UserLog struct {
-	ID      string      `json:"id"`
-	UserID  string      `json:"user_id"`
-	Message interface{} `json:"message"`
 }

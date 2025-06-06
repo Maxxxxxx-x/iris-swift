@@ -24,38 +24,14 @@ func New(db DBTX) *Queries {
 func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	q := Queries{db: db}
 	var err error
-	if q.approveUserByEmailStmt, err = db.PrepareContext(ctx, approveUserByEmail); err != nil {
-		return nil, fmt.Errorf("error preparing query ApproveUserByEmail: %w", err)
+	if q.createUserStmt, err = db.PrepareContext(ctx, createUser); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateUser: %w", err)
 	}
-	if q.approveUserByIdStmt, err = db.PrepareContext(ctx, approveUserById); err != nil {
-		return nil, fmt.Errorf("error preparing query ApproveUserById: %w", err)
-	}
-	if q.approveUserByUsernameStmt, err = db.PrepareContext(ctx, approveUserByUsername); err != nil {
-		return nil, fmt.Errorf("error preparing query ApproveUserByUsername: %w", err)
-	}
-	if q.blacklistUserByEmailStmt, err = db.PrepareContext(ctx, blacklistUserByEmail); err != nil {
-		return nil, fmt.Errorf("error preparing query BlacklistUserByEmail: %w", err)
-	}
-	if q.blacklistUserByIdStmt, err = db.PrepareContext(ctx, blacklistUserById); err != nil {
-		return nil, fmt.Errorf("error preparing query BlacklistUserById: %w", err)
-	}
-	if q.blacklistUserByUsernameStmt, err = db.PrepareContext(ctx, blacklistUserByUsername); err != nil {
-		return nil, fmt.Errorf("error preparing query BlacklistUserByUsername: %w", err)
-	}
-	if q.createApiKeyStmt, err = db.PrepareContext(ctx, createApiKey); err != nil {
-		return nil, fmt.Errorf("error preparing query CreateApiKey: %w", err)
-	}
-	if q.createUserRecordStmt, err = db.PrepareContext(ctx, createUserRecord); err != nil {
-		return nil, fmt.Errorf("error preparing query CreateUserRecord: %w", err)
+	if q.deleteApiKeyByCreatorIdStmt, err = db.PrepareContext(ctx, deleteApiKeyByCreatorId); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteApiKeyByCreatorId: %w", err)
 	}
 	if q.deleteApiKeyByIdStmt, err = db.PrepareContext(ctx, deleteApiKeyById); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteApiKeyById: %w", err)
-	}
-	if q.deleteApiKeysFromuserStmt, err = db.PrepareContext(ctx, deleteApiKeysFromuser); err != nil {
-		return nil, fmt.Errorf("error preparing query DeleteApiKeysFromuser: %w", err)
-	}
-	if q.deleteRevokedApiKeysStmt, err = db.PrepareContext(ctx, deleteRevokedApiKeys); err != nil {
-		return nil, fmt.Errorf("error preparing query DeleteRevokedApiKeys: %w", err)
 	}
 	if q.deleteUserByEmailStmt, err = db.PrepareContext(ctx, deleteUserByEmail); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteUserByEmail: %w", err)
@@ -63,38 +39,32 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.deleteUserByIdStmt, err = db.PrepareContext(ctx, deleteUserById); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteUserById: %w", err)
 	}
-	if q.deleteUserByUserNameStmt, err = db.PrepareContext(ctx, deleteUserByUserName); err != nil {
-		return nil, fmt.Errorf("error preparing query DeleteUserByUserName: %w", err)
+	if q.forceUserChangePasswordByEmailStmt, err = db.PrepareContext(ctx, forceUserChangePasswordByEmail); err != nil {
+		return nil, fmt.Errorf("error preparing query ForceUserChangePasswordByEmail: %w", err)
 	}
-	if q.forcePasswordChangeByEmailStmt, err = db.PrepareContext(ctx, forcePasswordChangeByEmail); err != nil {
-		return nil, fmt.Errorf("error preparing query ForcePasswordChangeByEmail: %w", err)
-	}
-	if q.forcePasswordChangeByIdStmt, err = db.PrepareContext(ctx, forcePasswordChangeById); err != nil {
-		return nil, fmt.Errorf("error preparing query ForcePasswordChangeById: %w", err)
-	}
-	if q.forcePasswordChangeByUsernameStmt, err = db.PrepareContext(ctx, forcePasswordChangeByUsername); err != nil {
-		return nil, fmt.Errorf("error preparing query ForcePasswordChangeByUsername: %w", err)
-	}
-	if q.getAllApiKeysStmt, err = db.PrepareContext(ctx, getAllApiKeys); err != nil {
-		return nil, fmt.Errorf("error preparing query GetAllApiKeys: %w", err)
-	}
-	if q.getAllApiKeysFromUserIdStmt, err = db.PrepareContext(ctx, getAllApiKeysFromUserId); err != nil {
-		return nil, fmt.Errorf("error preparing query GetAllApiKeysFromUserId: %w", err)
+	if q.forceUserChangePasswordByIdStmt, err = db.PrepareContext(ctx, forceUserChangePasswordById); err != nil {
+		return nil, fmt.Errorf("error preparing query ForceUserChangePasswordById: %w", err)
 	}
 	if q.getAllUsersStmt, err = db.PrepareContext(ctx, getAllUsers); err != nil {
 		return nil, fmt.Errorf("error preparing query GetAllUsers: %w", err)
 	}
-	if q.getApiKeyByIdStmt, err = db.PrepareContext(ctx, getApiKeyById); err != nil {
-		return nil, fmt.Errorf("error preparing query GetApiKeyById: %w", err)
+	if q.getApiKeyByCreatorIdStmt, err = db.PrepareContext(ctx, getApiKeyByCreatorId); err != nil {
+		return nil, fmt.Errorf("error preparing query GetApiKeyByCreatorId: %w", err)
 	}
-	if q.getApiKeysByRevokerIdStmt, err = db.PrepareContext(ctx, getApiKeysByRevokerId); err != nil {
-		return nil, fmt.Errorf("error preparing query GetApiKeysByRevokerId: %w", err)
+	if q.getApiKeyByIdAndCreatorIdStmt, err = db.PrepareContext(ctx, getApiKeyByIdAndCreatorId); err != nil {
+		return nil, fmt.Errorf("error preparing query GetApiKeyByIdAndCreatorId: %w", err)
 	}
-	if q.getRevokedApiKeysStmt, err = db.PrepareContext(ctx, getRevokedApiKeys); err != nil {
-		return nil, fmt.Errorf("error preparing query GetRevokedApiKeys: %w", err)
+	if q.getApiKeyByKeyHashStmt, err = db.PrepareContext(ctx, getApiKeyByKeyHash); err != nil {
+		return nil, fmt.Errorf("error preparing query GetApiKeyByKeyHash: %w", err)
 	}
-	if q.getRevokedApiKeysFromUserStmt, err = db.PrepareContext(ctx, getRevokedApiKeysFromUser); err != nil {
-		return nil, fmt.Errorf("error preparing query GetRevokedApiKeysFromUser: %w", err)
+	if q.getApiKeyByNameAndCreatorIdStmt, err = db.PrepareContext(ctx, getApiKeyByNameAndCreatorId); err != nil {
+		return nil, fmt.Errorf("error preparing query GetApiKeyByNameAndCreatorId: %w", err)
+	}
+	if q.getApiKeyUsageByKeyIdAndUserIdStmt, err = db.PrepareContext(ctx, getApiKeyUsageByKeyIdAndUserId); err != nil {
+		return nil, fmt.Errorf("error preparing query GetApiKeyUsageByKeyIdAndUserId: %w", err)
+	}
+	if q.getApiKeysStmt, err = db.PrepareContext(ctx, getApiKeys); err != nil {
+		return nil, fmt.Errorf("error preparing query GetApiKeys: %w", err)
 	}
 	if q.getUserByEmailStmt, err = db.PrepareContext(ctx, getUserByEmail); err != nil {
 		return nil, fmt.Errorf("error preparing query GetUserByEmail: %w", err)
@@ -102,100 +72,36 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getUserByIdStmt, err = db.PrepareContext(ctx, getUserById); err != nil {
 		return nil, fmt.Errorf("error preparing query GetUserById: %w", err)
 	}
-	if q.getUserByIdentifierStmt, err = db.PrepareContext(ctx, getUserByIdentifier); err != nil {
-		return nil, fmt.Errorf("error preparing query GetUserByIdentifier: %w", err)
+	if q.refreshApiKeyStmt, err = db.PrepareContext(ctx, refreshApiKey); err != nil {
+		return nil, fmt.Errorf("error preparing query RefreshApiKey: %w", err)
 	}
-	if q.getUserByUsernameStmt, err = db.PrepareContext(ctx, getUserByUsername); err != nil {
-		return nil, fmt.Errorf("error preparing query GetUserByUsername: %w", err)
+	if q.saveApiKeyStmt, err = db.PrepareContext(ctx, saveApiKey); err != nil {
+		return nil, fmt.Errorf("error preparing query SaveApiKey: %w", err)
 	}
-	if q.getUsersApproverStmt, err = db.PrepareContext(ctx, getUsersApprover); err != nil {
-		return nil, fmt.Errorf("error preparing query GetUsersApprover: %w", err)
+	if q.upatePasswordByEmailStmt, err = db.PrepareContext(ctx, upatePasswordByEmail); err != nil {
+		return nil, fmt.Errorf("error preparing query UpatePasswordByEmail: %w", err)
 	}
-	if q.getUsersOfAccountTypeStmt, err = db.PrepareContext(ctx, getUsersOfAccountType); err != nil {
-		return nil, fmt.Errorf("error preparing query GetUsersOfAccountType: %w", err)
-	}
-	if q.revokeApiKeyByIdStmt, err = db.PrepareContext(ctx, revokeApiKeyById); err != nil {
-		return nil, fmt.Errorf("error preparing query RevokeApiKeyById: %w", err)
-	}
-	if q.revokeApiKeysFromUserStmt, err = db.PrepareContext(ctx, revokeApiKeysFromUser); err != nil {
-		return nil, fmt.Errorf("error preparing query RevokeApiKeysFromUser: %w", err)
-	}
-	if q.updateAccountTypeByEmailStmt, err = db.PrepareContext(ctx, updateAccountTypeByEmail); err != nil {
-		return nil, fmt.Errorf("error preparing query UpdateAccountTypeByEmail: %w", err)
-	}
-	if q.updateAccountTypeByIdStmt, err = db.PrepareContext(ctx, updateAccountTypeById); err != nil {
-		return nil, fmt.Errorf("error preparing query UpdateAccountTypeById: %w", err)
-	}
-	if q.updateAccountTypeByUsernameStmt, err = db.PrepareContext(ctx, updateAccountTypeByUsername); err != nil {
-		return nil, fmt.Errorf("error preparing query UpdateAccountTypeByUsername: %w", err)
-	}
-	if q.updatePasswordByEmailStmt, err = db.PrepareContext(ctx, updatePasswordByEmail); err != nil {
-		return nil, fmt.Errorf("error preparing query UpdatePasswordByEmail: %w", err)
-	}
-	if q.updatePasswordByUsernameStmt, err = db.PrepareContext(ctx, updatePasswordByUsername); err != nil {
-		return nil, fmt.Errorf("error preparing query UpdatePasswordByUsername: %w", err)
-	}
-	if q.updatePasswordByidStmt, err = db.PrepareContext(ctx, updatePasswordByid); err != nil {
-		return nil, fmt.Errorf("error preparing query UpdatePasswordByid: %w", err)
+	if q.updatePasswordByIdStmt, err = db.PrepareContext(ctx, updatePasswordById); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdatePasswordById: %w", err)
 	}
 	return &q, nil
 }
 
 func (q *Queries) Close() error {
 	var err error
-	if q.approveUserByEmailStmt != nil {
-		if cerr := q.approveUserByEmailStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing approveUserByEmailStmt: %w", cerr)
+	if q.createUserStmt != nil {
+		if cerr := q.createUserStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createUserStmt: %w", cerr)
 		}
 	}
-	if q.approveUserByIdStmt != nil {
-		if cerr := q.approveUserByIdStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing approveUserByIdStmt: %w", cerr)
-		}
-	}
-	if q.approveUserByUsernameStmt != nil {
-		if cerr := q.approveUserByUsernameStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing approveUserByUsernameStmt: %w", cerr)
-		}
-	}
-	if q.blacklistUserByEmailStmt != nil {
-		if cerr := q.blacklistUserByEmailStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing blacklistUserByEmailStmt: %w", cerr)
-		}
-	}
-	if q.blacklistUserByIdStmt != nil {
-		if cerr := q.blacklistUserByIdStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing blacklistUserByIdStmt: %w", cerr)
-		}
-	}
-	if q.blacklistUserByUsernameStmt != nil {
-		if cerr := q.blacklistUserByUsernameStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing blacklistUserByUsernameStmt: %w", cerr)
-		}
-	}
-	if q.createApiKeyStmt != nil {
-		if cerr := q.createApiKeyStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing createApiKeyStmt: %w", cerr)
-		}
-	}
-	if q.createUserRecordStmt != nil {
-		if cerr := q.createUserRecordStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing createUserRecordStmt: %w", cerr)
+	if q.deleteApiKeyByCreatorIdStmt != nil {
+		if cerr := q.deleteApiKeyByCreatorIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteApiKeyByCreatorIdStmt: %w", cerr)
 		}
 	}
 	if q.deleteApiKeyByIdStmt != nil {
 		if cerr := q.deleteApiKeyByIdStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing deleteApiKeyByIdStmt: %w", cerr)
-		}
-	}
-	if q.deleteApiKeysFromuserStmt != nil {
-		if cerr := q.deleteApiKeysFromuserStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing deleteApiKeysFromuserStmt: %w", cerr)
-		}
-	}
-	if q.deleteRevokedApiKeysStmt != nil {
-		if cerr := q.deleteRevokedApiKeysStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing deleteRevokedApiKeysStmt: %w", cerr)
 		}
 	}
 	if q.deleteUserByEmailStmt != nil {
@@ -208,34 +114,14 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing deleteUserByIdStmt: %w", cerr)
 		}
 	}
-	if q.deleteUserByUserNameStmt != nil {
-		if cerr := q.deleteUserByUserNameStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing deleteUserByUserNameStmt: %w", cerr)
+	if q.forceUserChangePasswordByEmailStmt != nil {
+		if cerr := q.forceUserChangePasswordByEmailStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing forceUserChangePasswordByEmailStmt: %w", cerr)
 		}
 	}
-	if q.forcePasswordChangeByEmailStmt != nil {
-		if cerr := q.forcePasswordChangeByEmailStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing forcePasswordChangeByEmailStmt: %w", cerr)
-		}
-	}
-	if q.forcePasswordChangeByIdStmt != nil {
-		if cerr := q.forcePasswordChangeByIdStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing forcePasswordChangeByIdStmt: %w", cerr)
-		}
-	}
-	if q.forcePasswordChangeByUsernameStmt != nil {
-		if cerr := q.forcePasswordChangeByUsernameStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing forcePasswordChangeByUsernameStmt: %w", cerr)
-		}
-	}
-	if q.getAllApiKeysStmt != nil {
-		if cerr := q.getAllApiKeysStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing getAllApiKeysStmt: %w", cerr)
-		}
-	}
-	if q.getAllApiKeysFromUserIdStmt != nil {
-		if cerr := q.getAllApiKeysFromUserIdStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing getAllApiKeysFromUserIdStmt: %w", cerr)
+	if q.forceUserChangePasswordByIdStmt != nil {
+		if cerr := q.forceUserChangePasswordByIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing forceUserChangePasswordByIdStmt: %w", cerr)
 		}
 	}
 	if q.getAllUsersStmt != nil {
@@ -243,24 +129,34 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getAllUsersStmt: %w", cerr)
 		}
 	}
-	if q.getApiKeyByIdStmt != nil {
-		if cerr := q.getApiKeyByIdStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing getApiKeyByIdStmt: %w", cerr)
+	if q.getApiKeyByCreatorIdStmt != nil {
+		if cerr := q.getApiKeyByCreatorIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getApiKeyByCreatorIdStmt: %w", cerr)
 		}
 	}
-	if q.getApiKeysByRevokerIdStmt != nil {
-		if cerr := q.getApiKeysByRevokerIdStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing getApiKeysByRevokerIdStmt: %w", cerr)
+	if q.getApiKeyByIdAndCreatorIdStmt != nil {
+		if cerr := q.getApiKeyByIdAndCreatorIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getApiKeyByIdAndCreatorIdStmt: %w", cerr)
 		}
 	}
-	if q.getRevokedApiKeysStmt != nil {
-		if cerr := q.getRevokedApiKeysStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing getRevokedApiKeysStmt: %w", cerr)
+	if q.getApiKeyByKeyHashStmt != nil {
+		if cerr := q.getApiKeyByKeyHashStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getApiKeyByKeyHashStmt: %w", cerr)
 		}
 	}
-	if q.getRevokedApiKeysFromUserStmt != nil {
-		if cerr := q.getRevokedApiKeysFromUserStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing getRevokedApiKeysFromUserStmt: %w", cerr)
+	if q.getApiKeyByNameAndCreatorIdStmt != nil {
+		if cerr := q.getApiKeyByNameAndCreatorIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getApiKeyByNameAndCreatorIdStmt: %w", cerr)
+		}
+	}
+	if q.getApiKeyUsageByKeyIdAndUserIdStmt != nil {
+		if cerr := q.getApiKeyUsageByKeyIdAndUserIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getApiKeyUsageByKeyIdAndUserIdStmt: %w", cerr)
+		}
+	}
+	if q.getApiKeysStmt != nil {
+		if cerr := q.getApiKeysStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getApiKeysStmt: %w", cerr)
 		}
 	}
 	if q.getUserByEmailStmt != nil {
@@ -273,64 +169,24 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getUserByIdStmt: %w", cerr)
 		}
 	}
-	if q.getUserByIdentifierStmt != nil {
-		if cerr := q.getUserByIdentifierStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing getUserByIdentifierStmt: %w", cerr)
+	if q.refreshApiKeyStmt != nil {
+		if cerr := q.refreshApiKeyStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing refreshApiKeyStmt: %w", cerr)
 		}
 	}
-	if q.getUserByUsernameStmt != nil {
-		if cerr := q.getUserByUsernameStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing getUserByUsernameStmt: %w", cerr)
+	if q.saveApiKeyStmt != nil {
+		if cerr := q.saveApiKeyStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing saveApiKeyStmt: %w", cerr)
 		}
 	}
-	if q.getUsersApproverStmt != nil {
-		if cerr := q.getUsersApproverStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing getUsersApproverStmt: %w", cerr)
+	if q.upatePasswordByEmailStmt != nil {
+		if cerr := q.upatePasswordByEmailStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing upatePasswordByEmailStmt: %w", cerr)
 		}
 	}
-	if q.getUsersOfAccountTypeStmt != nil {
-		if cerr := q.getUsersOfAccountTypeStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing getUsersOfAccountTypeStmt: %w", cerr)
-		}
-	}
-	if q.revokeApiKeyByIdStmt != nil {
-		if cerr := q.revokeApiKeyByIdStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing revokeApiKeyByIdStmt: %w", cerr)
-		}
-	}
-	if q.revokeApiKeysFromUserStmt != nil {
-		if cerr := q.revokeApiKeysFromUserStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing revokeApiKeysFromUserStmt: %w", cerr)
-		}
-	}
-	if q.updateAccountTypeByEmailStmt != nil {
-		if cerr := q.updateAccountTypeByEmailStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing updateAccountTypeByEmailStmt: %w", cerr)
-		}
-	}
-	if q.updateAccountTypeByIdStmt != nil {
-		if cerr := q.updateAccountTypeByIdStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing updateAccountTypeByIdStmt: %w", cerr)
-		}
-	}
-	if q.updateAccountTypeByUsernameStmt != nil {
-		if cerr := q.updateAccountTypeByUsernameStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing updateAccountTypeByUsernameStmt: %w", cerr)
-		}
-	}
-	if q.updatePasswordByEmailStmt != nil {
-		if cerr := q.updatePasswordByEmailStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing updatePasswordByEmailStmt: %w", cerr)
-		}
-	}
-	if q.updatePasswordByUsernameStmt != nil {
-		if cerr := q.updatePasswordByUsernameStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing updatePasswordByUsernameStmt: %w", cerr)
-		}
-	}
-	if q.updatePasswordByidStmt != nil {
-		if cerr := q.updatePasswordByidStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing updatePasswordByidStmt: %w", cerr)
+	if q.updatePasswordByIdStmt != nil {
+		if cerr := q.updatePasswordByIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updatePasswordByIdStmt: %w", cerr)
 		}
 	}
 	return err
@@ -370,89 +226,53 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 }
 
 type Queries struct {
-	db                                DBTX
-	tx                                *sql.Tx
-	approveUserByEmailStmt            *sql.Stmt
-	approveUserByIdStmt               *sql.Stmt
-	approveUserByUsernameStmt         *sql.Stmt
-	blacklistUserByEmailStmt          *sql.Stmt
-	blacklistUserByIdStmt             *sql.Stmt
-	blacklistUserByUsernameStmt       *sql.Stmt
-	createApiKeyStmt                  *sql.Stmt
-	createUserRecordStmt              *sql.Stmt
-	deleteApiKeyByIdStmt              *sql.Stmt
-	deleteApiKeysFromuserStmt         *sql.Stmt
-	deleteRevokedApiKeysStmt          *sql.Stmt
-	deleteUserByEmailStmt             *sql.Stmt
-	deleteUserByIdStmt                *sql.Stmt
-	deleteUserByUserNameStmt          *sql.Stmt
-	forcePasswordChangeByEmailStmt    *sql.Stmt
-	forcePasswordChangeByIdStmt       *sql.Stmt
-	forcePasswordChangeByUsernameStmt *sql.Stmt
-	getAllApiKeysStmt                 *sql.Stmt
-	getAllApiKeysFromUserIdStmt       *sql.Stmt
-	getAllUsersStmt                   *sql.Stmt
-	getApiKeyByIdStmt                 *sql.Stmt
-	getApiKeysByRevokerIdStmt         *sql.Stmt
-	getRevokedApiKeysStmt             *sql.Stmt
-	getRevokedApiKeysFromUserStmt     *sql.Stmt
-	getUserByEmailStmt                *sql.Stmt
-	getUserByIdStmt                   *sql.Stmt
-	getUserByIdentifierStmt           *sql.Stmt
-	getUserByUsernameStmt             *sql.Stmt
-	getUsersApproverStmt              *sql.Stmt
-	getUsersOfAccountTypeStmt         *sql.Stmt
-	revokeApiKeyByIdStmt              *sql.Stmt
-	revokeApiKeysFromUserStmt         *sql.Stmt
-	updateAccountTypeByEmailStmt      *sql.Stmt
-	updateAccountTypeByIdStmt         *sql.Stmt
-	updateAccountTypeByUsernameStmt   *sql.Stmt
-	updatePasswordByEmailStmt         *sql.Stmt
-	updatePasswordByUsernameStmt      *sql.Stmt
-	updatePasswordByidStmt            *sql.Stmt
+	db                                 DBTX
+	tx                                 *sql.Tx
+	createUserStmt                     *sql.Stmt
+	deleteApiKeyByCreatorIdStmt        *sql.Stmt
+	deleteApiKeyByIdStmt               *sql.Stmt
+	deleteUserByEmailStmt              *sql.Stmt
+	deleteUserByIdStmt                 *sql.Stmt
+	forceUserChangePasswordByEmailStmt *sql.Stmt
+	forceUserChangePasswordByIdStmt    *sql.Stmt
+	getAllUsersStmt                    *sql.Stmt
+	getApiKeyByCreatorIdStmt           *sql.Stmt
+	getApiKeyByIdAndCreatorIdStmt      *sql.Stmt
+	getApiKeyByKeyHashStmt             *sql.Stmt
+	getApiKeyByNameAndCreatorIdStmt    *sql.Stmt
+	getApiKeyUsageByKeyIdAndUserIdStmt *sql.Stmt
+	getApiKeysStmt                     *sql.Stmt
+	getUserByEmailStmt                 *sql.Stmt
+	getUserByIdStmt                    *sql.Stmt
+	refreshApiKeyStmt                  *sql.Stmt
+	saveApiKeyStmt                     *sql.Stmt
+	upatePasswordByEmailStmt           *sql.Stmt
+	updatePasswordByIdStmt             *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
-		db:                                tx,
-		tx:                                tx,
-		approveUserByEmailStmt:            q.approveUserByEmailStmt,
-		approveUserByIdStmt:               q.approveUserByIdStmt,
-		approveUserByUsernameStmt:         q.approveUserByUsernameStmt,
-		blacklistUserByEmailStmt:          q.blacklistUserByEmailStmt,
-		blacklistUserByIdStmt:             q.blacklistUserByIdStmt,
-		blacklistUserByUsernameStmt:       q.blacklistUserByUsernameStmt,
-		createApiKeyStmt:                  q.createApiKeyStmt,
-		createUserRecordStmt:              q.createUserRecordStmt,
-		deleteApiKeyByIdStmt:              q.deleteApiKeyByIdStmt,
-		deleteApiKeysFromuserStmt:         q.deleteApiKeysFromuserStmt,
-		deleteRevokedApiKeysStmt:          q.deleteRevokedApiKeysStmt,
-		deleteUserByEmailStmt:             q.deleteUserByEmailStmt,
-		deleteUserByIdStmt:                q.deleteUserByIdStmt,
-		deleteUserByUserNameStmt:          q.deleteUserByUserNameStmt,
-		forcePasswordChangeByEmailStmt:    q.forcePasswordChangeByEmailStmt,
-		forcePasswordChangeByIdStmt:       q.forcePasswordChangeByIdStmt,
-		forcePasswordChangeByUsernameStmt: q.forcePasswordChangeByUsernameStmt,
-		getAllApiKeysStmt:                 q.getAllApiKeysStmt,
-		getAllApiKeysFromUserIdStmt:       q.getAllApiKeysFromUserIdStmt,
-		getAllUsersStmt:                   q.getAllUsersStmt,
-		getApiKeyByIdStmt:                 q.getApiKeyByIdStmt,
-		getApiKeysByRevokerIdStmt:         q.getApiKeysByRevokerIdStmt,
-		getRevokedApiKeysStmt:             q.getRevokedApiKeysStmt,
-		getRevokedApiKeysFromUserStmt:     q.getRevokedApiKeysFromUserStmt,
-		getUserByEmailStmt:                q.getUserByEmailStmt,
-		getUserByIdStmt:                   q.getUserByIdStmt,
-		getUserByIdentifierStmt:           q.getUserByIdentifierStmt,
-		getUserByUsernameStmt:             q.getUserByUsernameStmt,
-		getUsersApproverStmt:              q.getUsersApproverStmt,
-		getUsersOfAccountTypeStmt:         q.getUsersOfAccountTypeStmt,
-		revokeApiKeyByIdStmt:              q.revokeApiKeyByIdStmt,
-		revokeApiKeysFromUserStmt:         q.revokeApiKeysFromUserStmt,
-		updateAccountTypeByEmailStmt:      q.updateAccountTypeByEmailStmt,
-		updateAccountTypeByIdStmt:         q.updateAccountTypeByIdStmt,
-		updateAccountTypeByUsernameStmt:   q.updateAccountTypeByUsernameStmt,
-		updatePasswordByEmailStmt:         q.updatePasswordByEmailStmt,
-		updatePasswordByUsernameStmt:      q.updatePasswordByUsernameStmt,
-		updatePasswordByidStmt:            q.updatePasswordByidStmt,
+		db:                                 tx,
+		tx:                                 tx,
+		createUserStmt:                     q.createUserStmt,
+		deleteApiKeyByCreatorIdStmt:        q.deleteApiKeyByCreatorIdStmt,
+		deleteApiKeyByIdStmt:               q.deleteApiKeyByIdStmt,
+		deleteUserByEmailStmt:              q.deleteUserByEmailStmt,
+		deleteUserByIdStmt:                 q.deleteUserByIdStmt,
+		forceUserChangePasswordByEmailStmt: q.forceUserChangePasswordByEmailStmt,
+		forceUserChangePasswordByIdStmt:    q.forceUserChangePasswordByIdStmt,
+		getAllUsersStmt:                    q.getAllUsersStmt,
+		getApiKeyByCreatorIdStmt:           q.getApiKeyByCreatorIdStmt,
+		getApiKeyByIdAndCreatorIdStmt:      q.getApiKeyByIdAndCreatorIdStmt,
+		getApiKeyByKeyHashStmt:             q.getApiKeyByKeyHashStmt,
+		getApiKeyByNameAndCreatorIdStmt:    q.getApiKeyByNameAndCreatorIdStmt,
+		getApiKeyUsageByKeyIdAndUserIdStmt: q.getApiKeyUsageByKeyIdAndUserIdStmt,
+		getApiKeysStmt:                     q.getApiKeysStmt,
+		getUserByEmailStmt:                 q.getUserByEmailStmt,
+		getUserByIdStmt:                    q.getUserByIdStmt,
+		refreshApiKeyStmt:                  q.refreshApiKeyStmt,
+		saveApiKeyStmt:                     q.saveApiKeyStmt,
+		upatePasswordByEmailStmt:           q.upatePasswordByEmailStmt,
+		updatePasswordByIdStmt:             q.updatePasswordByIdStmt,
 	}
 }
