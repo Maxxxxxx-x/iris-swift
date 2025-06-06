@@ -7,7 +7,7 @@ import (
 	"github.com/cristalhq/jwt/v5"
 )
 
-func GenerateRefreshToken(userId, accessTokenId string) (*jwt.Token, error) {
+func GenerateRefreshToken(userId string) (*jwt.Token, error) {
 	tokenId, err := utils.GenerateULID()
 	if err != nil {
 		manager.logger.Error().Err(err).Msg("Failed to create TokenId while generating refresh token")
@@ -18,7 +18,6 @@ func GenerateRefreshToken(userId, accessTokenId string) (*jwt.Token, error) {
 
 	claims := &RefreshTokenClaims{
 		UserId:        userId,
-		AccessTokenId: accessTokenId,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ID:        tokenId.String(),
 			Subject:   "refresh-token",
