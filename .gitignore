@@ -4,3 +4,4 @@
 *.db
 /views/node_modules
 /tmp
+/logs
